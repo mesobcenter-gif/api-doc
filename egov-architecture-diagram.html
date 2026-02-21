@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethiopian National Unified E-Government Platform — Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --panel: #ffffff;
+    --border: #dce3f0;
+    --accent: #2563eb;
+    --accent2: #7c3aed;
+    --accent3: #059669;
+    --accent4: #ea580c;
+    --accent5: #ca8a04;
+    --text: #374151;
+    --muted: #9ca3af;
+    --white: #111827;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(37,99,235,0.06) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(37,99,235,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  .header h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(22px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .header h1 span {
+    color: var(--accent);
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  .version-badge {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 4px 14px;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  /* ── DIAGRAM CANVAS ── */
+  .diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  /* Arrow connector */
+  .arrow-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 38px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .arrow-v {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--border), var(--accent) 50%, var(--border));
+    position: relative;
+  }
+
+  .arrow-v::after {
+    content: '▼';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  /* ── LAYER CARD ── */
+  .layer {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 20px 24px;
+    position: relative;
+    animation: fadeUp 0.6s ease both;
+    transition: border-color 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .layer:hover { border-color: var(--accent); }
+
+  .layer-tag {
+    position: absolute;
+    top: -11px;
+    left: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* ── SECTION TITLES ── */
+  .layer-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── NODE BOXES ── */
+  .nodes {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .node {
+    flex: 1;
+    min-width: 140px;
+    max-width: 220px;
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    background: #fff;
+    transition: all 0.25s;
+    cursor: default;
+    position: relative;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .node:hover {
+    transform: translateY(-3px);
+    border-color: var(--c);
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 0 0 1px var(--c);
+  }
+
+  .node-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .node-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .node-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .node-path {
+    margin-top: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 6px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    display: inline-block;
+    color: var(--muted);
+  }
+
+  /* color variants */
+  .node.c-cyan  { --c: var(--accent);  } .node.c-cyan  .node-path { color: var(--accent); }
+  .node.c-green { --c: var(--accent3); } .node.c-green .node-path { color: var(--accent3); }
+  .node.c-purple{ --c: var(--accent2); } .node.c-purple .node-path { color: var(--accent2); }
+  .node.c-orange{ --c: var(--accent4); } .node.c-orange .node-path { color: var(--accent4); }
+  .node.c-yellow{ --c: var(--accent5); } .node.c-yellow .node-path { color: var(--accent5); }
+
+  .node.c-cyan .node-icon   { filter: none; }
+  .node.c-green .node-icon  { filter: none; }
+  .node.c-purple .node-icon { filter: none; }
+  .node.c-orange .node-icon { filter: none; }
+  .node.c-yellow .node-icon { filter: none; }
+
+  /* ── BIG GATEWAY ── */
+  .gateway-block {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 4px 20px rgba(37,99,235,0.1);
+    flex-wrap: wrap;
+  }
+
+  .gateway-icon { font-size: 36px; flex-shrink: 0; }
+
+  .gateway-info { flex: 1; min-width: 200px; }
+  .gateway-info h2 { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .gateway-info p  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  .gateway-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .pill {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    border: 1px solid;
+  }
+  .pill.cyan   { color: var(--accent);  border-color: var(--accent);  background: rgba(0,212,255,0.08); }
+  .pill.green  { color: var(--accent3); border-color: var(--accent3); background: rgba(0,255,157,0.08); }
+  .pill.orange { color: var(--accent4); border-color: var(--accent4); background: rgba(255,107,53,0.08); }
+  .pill.purple { color: var(--accent2); border-color: var(--accent2); background: rgba(123,94,167,0.08); }
+
+  /* ── CLIENTS SECTION ── */
+  .clients-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .client-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f8faff;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    min-width: 90px;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .client-chip:hover { border-color: var(--accent3); color: var(--accent3); background: #f0fdf4; }
+  .client-chip span { font-size: 24px; }
+
+  /* ── CROSS-CUTTING ── */
+  .crosscut {
+    border: 1px dashed #c4b5fd;
+    border-radius: 12px;
+    padding: 18px 24px;
+    background: #faf5ff;
+  }
+  .crosscut-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 14px;
+  }
+
+  /* ── FLOW LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  /* ── REQUEST FLOW ── */
+  .flow-section {
+    margin-top: 48px;
+  }
+  .flow-section h2 {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .flow-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .flow-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    transition: border-color 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .flow-step:hover { border-color: var(--accent); }
+  .step-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 28px;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .step-body h4 { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .step-body p  { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .step-arrow   { font-size: 11px; color: var(--accent); font-family: 'Space Mono', monospace; margin-top: 4px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeUp   { from { opacity: 0; transform: translateY(16px);  } to { opacity: 1; transform: none; } }
+
+  .layer:nth-child(1)  { animation-delay: 0.05s; }
+  .layer:nth-child(3)  { animation-delay: 0.1s; }
+  .layer:nth-child(5)  { animation-delay: 0.15s; }
+  .layer:nth-child(7)  { animation-delay: 0.2s; }
+  .layer:nth-child(9)  { animation-delay: 0.25s; }
+  .layer:nth-child(11) { animation-delay: 0.3s; }
+
+  /* Pulse glow on gateway */
+  @keyframes pulse-border {
+    0%, 100% { box-shadow: 0 4px 20px rgba(37,99,235,0.1); }
+    50%       { box-shadow: 0 4px 32px rgba(37,99,235,0.2); }
+  }
+  .gateway-block { animation: pulse-border 3s ease-in-out infinite; }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .nodes { flex-direction: column; }
+    .node  { max-width: 100%; }
+    .clients-row { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-label">System Architecture Overview</div>
+    <h1>Ethiopian National Unified<br><span>E-Government Platform</span></h1>
+    <div class="header-sub">Microservices · Event-Driven · Multi-Agency · PCI-DSS Compliant</div>
+    <div class="version-badge">API v2.1.0 · egov.et</div>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="diagram">
+
+    <!-- LAYER 0 — Clients -->
+    <div class="layer">
+      <div class="layer-tag">Layer 0 · Clients</div>
+      <div class="layer-title">Consumer Channels</div>
+      <div class="clients-row">
+        <div class="client-chip"><span>🌐</span>Web Portal</div>
+        <div class="client-chip"><span>📱</span>Mobile App</div>
+        <div class="client-chip"><span>📟</span>USSD</div>
+        <div class="client-chip"><span>🏢</span>3rd-Party Apps</div>
+        <div class="client-chip"><span>🏛️</span>Ministry Systems</div>
+        <div class="client-chip"><span>🛠️</span>Admin Console</div>
+      </div>
+    </div>
+
+    <div class="arrow-row"><div class="arrow-v"></div></div>
+
+    <!-- LAYER 1 — API Gateway -->
+    <div class="layer">
+      <div class="layer-tag">Layer 1 · Entry Point</div>
+      <div class="gateway-block">
+        <div class="gateway-icon">🚪</div>
+        <div class="gateway-info">
+          <h2>API Gateway</h2>
+          <p>Single entry point for all client requests. Handles routing, rate limiting, JWT validation, TLS termination, and access logging.</p>
+          <div class="gateway-pills">
+            <span class="pill cyan">JWT Bearer Tokens</span>
+            <span class="pill orange">1000 req/hr Rate Limit</span>
+            <span class="pill green">TLS 1.3</span>
+            <span class="pill purple">Request Routing /v2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-row"><div class="arrow-v"></div></div>
+
+    <!-- LAYER 2 — Auth -->
+    <div class="layer">
+      <div class="layer-tag">Layer 2 · Identity</div>
+      <div class="layer-title">Authentication &amp; Authorization Service</div>
+      <div class="nodes">
+        <div class="node c-cyan">
+          <div class="node-icon">🪪</div>
+          <div class="node-name">VeriFayda 2.0</div>
+          <div class="node-desc">National biometric identity verification for Ethiopian citizens</div>
+          <div class="node-path">/v2/auth/verifayda</div>
+        </div>
+        <div class="node c-cyan">
+          <div class="node-icon">🔑</div>
+          <div class="node-name">Local Auth</div>
+          <div class="node-desc">Email/password login, OTP-based MFA, foreign national support</div>
+          <div class="node-path">/v2/auth/login</div>
+        </div>
+        <div class="node c-cyan">
+          <div class="node-icon">🔄</div>
+          <div class="node-name">Token Management</div>
+          <div class="node-desc">JWT issuance, refresh, revocation, and role-based access control</div>
+          <div class="node-path">/v2/auth/token</div>
+        </div>
+        <div class="node c-cyan">
+          <div class="node-icon">🛡️</div>
+          <div class="node-name">Admin Auth + MFA</div>
+          <div class="node-desc">Enhanced MFA for administrative operations and privileged access</div>
+          <div class="node-path">/api/v2/admin</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-row"><div class="arrow-v"></div></div>
+
+    <!-- LAYER 3 — Core Services -->
+    <div class="layer">
+      <div class="layer-tag">Layer 3 · Core Business Services</div>
+      <div class="layer-title">Citizen &amp; Service Management</div>
+      <div class="nodes">
+        <div class="node c-green">
+          <div class="node-icon">📋</div>
+          <div class="node-name">Application Service</div>
+          <div class="node-desc">Full lifecycle management of citizen service applications — submit, track, approve, reject</div>
+          <div class="node-path">/v2/applications</div>
+        </div>
+        <div class="node c-green">
+          <div class="node-icon">🏗️</div>
+          <div class="node-name">Service Registry</div>
+          <div class="node-desc">47+ government services with multi-language support (am, en, or, ti), fees, and steps</div>
+          <div class="node-path">/v2/services</div>
+        </div>
+        <div class="node c-green">
+          <div class="node-icon">📝</div>
+          <div class="node-name">Dynamic Forms</div>
+          <div class="node-desc">Versioned, typed forms with conditional fields, validations, and i18n labels</div>
+          <div class="node-path">/v2/services/forms</div>
+        </div>
+        <div class="node c-green">
+          <div class="node-icon">📁</div>
+          <div class="node-name">Document Management</div>
+          <div class="node-desc">Scalable object storage for certificates, supporting docs, and digital assets</div>
+          <div class="node-path">/v2/storage</div>
+        </div>
+        <div class="node c-green">
+          <div class="node-icon">✅</div>
+          <div class="node-name">Validation Service</div>
+          <div class="node-desc">Data validation, business rule enforcement, and schema verification</div>
+          <div class="node-path">/v2/validation</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-row"><div class="arrow-v"></div></div>
+
+    <!-- LAYER 4 — Orchestration -->
+    <div class="layer">
+      <div class="layer-tag">Layer 4 · Orchestration</div>
+      <div class="layer-title">Workflow Engine (Saga Pattern · BPMN)</div>
+      <div class="nodes">
+        <div class="node c-purple">
+          <div class="node-icon">⚙️</div>
+          <div class="node-name">Workflow Engine</div>
+          <div class="node-desc">Distributed transactions using the Saga pattern for long-running multi-agency workflows</div>
+          <div class="node-path">/v2/workflows</div>
+        </div>
+        <div class="node c-purple">
+          <div class="node-icon">📐</div>
+          <div class="node-name">BPMN Versioning</div>
+          <div class="node-desc">Upload and manage BPMN workflow definitions with versioned deployments</div>
+          <div class="node-path">/api/v2/admin/workflows/bpmn</div>
+        </div>
+        <div class="node c-purple">
+          <div class="node-icon">🔀</div>
+          <div class="node-name">Step Orchestrator</div>
+          <div class="node-desc">Step ordering, timeout thresholds, circuit breakers, and manual retry/resume</div>
+          <div class="node-path">/api/v2/admin/workflows/steps</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-row"><div class="arrow-v"></div></div>
+
+    <!-- LAYER 5 — Integration -->
+    <div class="layer">
+      <div class="layer-tag">Layer 5 · External Integration</div>
+      <div class="layer-title">Ministry Adapters &amp; Payment Gateway</div>
+      <div class="nodes">
+        <div class="node c-orange">
+          <div class="node-icon">🏛️</div>
+          <div class="node-name">Ministry Adapter</div>
+          <div class="node-desc">Standardized integration with ministry-specific APIs and legacy government systems</div>
+          <div class="node-path">/v2/ministry</div>
+        </div>
+        <div class="node c-orange">
+          <div class="node-icon">💳</div>
+          <div class="node-name">Payment Service</div>
+          <div class="node-desc">TeleBirr, CBE Birr, bank transfers, USSD payments. PCI-DSS Level 1 compliant</div>
+          <div class="node-path">/v2/payments</div>
+        </div>
+        <div class="node c-orange">
+          <div class="node-icon">📨</div>
+          <div class="node-name">Notification Service</div>
+          <div class="node-desc">Email, SMS, push notifications, and in-app alerts with template management</div>
+          <div class="node-path">/v2/notifications</div>
+        </div>
+        <div class="node c-orange">
+          <div class="node-icon">🔁</div>
+          <div class="node-name">Async Event Bus</div>
+          <div class="node-desc">Asynchronous callbacks and event-driven responses from ministry systems</div>
+          <div class="node-path">Event Bus</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-row"><div class="arrow-v"></div></div>
+
+    <!-- LAYER 6 — Cross-Cutting -->
+    <div class="layer crosscut">
+      <div class="layer-tag">Layer 6 · Cross-Cutting</div>
+      <div class="crosscut-title">Observability · Compliance · Operational Resilience</div>
+      <div class="nodes">
+        <div class="node c-yellow">
+          <div class="node-icon">📜</div>
+          <div class="node-name">Audit Service</div>
+          <div class="node-desc">Immutable, cryptographically-signed audit trails. Legal investigation mode. Compliance exports.</div>
+          <div class="node-path">/v2/logs · /api/v2/admin/audit</div>
+        </div>
+        <div class="node c-yellow">
+          <div class="node-icon">📊</div>
+          <div class="node-name">Monitoring</div>
+          <div class="node-desc">OpenTelemetry tracing, Prometheus metrics, Grafana dashboards, SLA alerts</div>
+          <div class="node-path">/v2/monitoring</div>
+        </div>
+        <div class="node c-yellow">
+          <div class="node-icon">🔒</div>
+          <div class="node-name">Health &amp; Control</div>
+          <div class="node-desc">Circuit breakers, traffic drain, service disabling, stalled workflow retry/resume</div>
+          <div class="node-path">/api/v2/admin/health</div>
+        </div>
+        <div class="node c-yellow">
+          <div class="node-icon">📦</div>
+          <div class="node-name">ELK Stack</div>
+          <div class="node-desc">Centralized log management (Elasticsearch + Logstash + Kibana) for forensic analysis</div>
+          <div class="node-path">Internal Infrastructure</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /diagram -->
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> Cyan — Gateway & Auth</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div> Green — Core Services</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div> Purple — Orchestration</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent4)"></div> Orange — External Integration</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div> Yellow — Cross-Cutting</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--muted)"></div> Base URL: https://api.egov.et/v2</div>
+  </div>
+
+  <!-- REQUEST FLOW -->
+  <div class="flow-section">
+    <h2>► Request Flow — Step by Step</h2>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h4>Client → API Gateway</h4>
+          <p>JWT validation, rate limiting (1000 req/hr), request routing, access logging</p>
+          <div class="step-arrow">→ https://api.egov.et/v2</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h4>API Gateway → Auth Service</h4>
+          <p>Token validation via VeriFayda 2.0 biometrics or local email/OTP mechanism</p>
+          <div class="step-arrow">→ /v2/auth</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h4>Auth → Validation Service</h4>
+          <p>Payload validation, schema checking, business rule enforcement</p>
+          <div class="step-arrow">→ /v2/validation</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h4>Validation → Workflow Engine</h4>
+          <p>Multi-step BPMN workflow orchestrated with Saga pattern for transactional consistency</p>
+          <div class="step-arrow">→ /v2/workflows</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <h4>Workflow → Ministry Adapter</h4>
+          <p>Secure API calls to external ministry systems and legacy government platforms</p>
+          <div class="step-arrow">→ /v2/ministry</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">06</div>
+        <div class="step-body">
+          <h4>Ministry → Async Event Bus</h4>
+          <p>Asynchronous callbacks and event-driven status updates from agency systems</p>
+          <div class="step-arrow">→ Event Bus</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">07</div>
+        <div class="step-body">
+          <h4>Workflow → Object Storage</h4>
+          <p>Certificate generation and secure document storage with access control</p>
+          <div class="step-arrow">→ /v2/storage</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">08</div>
+        <div class="step-body">
+          <h4>Workflow → Notification Service</h4>
+          <p>Multi-channel delivery: Email, SMS, push notifications, in-app alerts</p>
+          <div class="step-arrow">→ /v2/notifications</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">09</div>
+        <div class="step-body">
+          <h4>All Services → Observability Stack</h4>
+          <p>Immutable audit logs, OpenTelemetry traces, Prometheus metrics, Grafana alerts</p>
+          <div class="step-arrow">→ /v2/logs · /v2/monitoring</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center; margin-top:60px; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--muted);">
+    FEDERAL DEMOCRATIC REPUBLIC OF ETHIOPIA · MINISTRY OF INNOVATION AND TECHNOLOGY · PLATFORM v2.1.0 · 2026
+  </div>
+
+</div>
+</body>
+</html>
