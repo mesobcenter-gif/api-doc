@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Systems Architecture Diagram</title>
+    <link rel="icon" href="Mesob-short.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -60,6 +61,11 @@
       }
 
       .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
         padding: 20px 40px;
         display: flex;
         justify-content: space-between;
@@ -70,12 +76,44 @@
         z-index: 100;
       }
 
+      body {
+        padding-top: 72px;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2563eb;
+        background: none;
+        -webkit-background-clip: unset;
+        -webkit-text-fill-color: unset;
+      }
+
+      [data-theme='light'] .header h1 {
+        color: #1d4ed8;
+      }
+
       h1 {
         font-size: 1.5rem;
         font-weight: 700;
-        background: linear-gradient(to right, var(--layer-ui), var(--layer-gateway));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      }
+
+      .page-footer {
+        margin-top: auto;
+        padding: 16px 40px;
+        border-top: 1px solid var(--card-border);
+        background: rgba(0, 0, 0, 0.08);
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+
+      [data-theme='light'] .page-footer {
+        background: rgba(0, 0, 0, 0.04);
+      }
+
+      .page-footer p {
+        margin: 0;
       }
 
       .controls {
@@ -200,6 +238,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .card-icon-oneline {
+        white-space: nowrap;
+        width: auto;
+        min-width: 48px;
+        padding-left: 14px;
+        padding-right: 14px;
       }
 
       .card-title {
@@ -354,6 +399,34 @@
         margin-top: 20px;
       }
 
+      /* Orchestration view: 5 layers, numbering 4.1 … 4.5, same layout as main diagram */
+      .orch-page-content .architecture-container.orch-view-container {
+        grid-template-rows: repeat(5, auto);
+      }
+      .orch-view-container .layer-label {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.5px;
+      }
+      .orch-view-container .layer-label span:first-child {
+        font-size: 0.9rem;
+        font-weight: 700;
+        opacity: 0.95;
+      }
+      .orch-view-container .layer-label span:last-child {
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: 0.3px;
+        margin-top: 2px;
+      }
+      .orch-view-container .layer-content:has(.orch-standalone-card) {
+        justify-content: center;
+      }
+      .orch-standalone-card {
+        min-width: 220px;
+        max-width: 280px;
+      }
+
       .service-category {
         margin-bottom: 30px;
       }
@@ -435,6 +508,87 @@
       }
       .identity-service-card:hover {
         box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+      }
+
+      /* Institution detail page: services table */
+      .inst-detail-bar {
+        border-bottom-color: var(--layer-institutions) !important;
+      }
+      .inst-detail-page .orch-page-title {
+        color: var(--layer-institutions) !important;
+      }
+      .inst-detail-page #backFromInstitutionBtn {
+        background: var(--layer-institutions);
+        color: #fff;
+      }
+      .inst-detail-page #backFromInstitutionBtn:hover {
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+      }
+
+      /* Microservice detail page (gateway-side) */
+      .ms-detail-bar {
+        border-bottom-color: var(--layer-microservices) !important;
+      }
+      .ms-detail-page .orch-page-title {
+        color: var(--layer-microservices) !important;
+      }
+      .ms-detail-page #backFromMicroserviceBtn {
+        background: var(--layer-microservices);
+        color: #fff;
+      }
+      .ms-detail-page #backFromMicroserviceBtn:hover {
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+      }
+      .ms-gateway-note {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        background: rgba(59, 130, 246, 0.08);
+        border-left: 4px solid var(--layer-microservices);
+        border-radius: 0 8px 8px 0;
+      }
+
+      .inst-table-wrap {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--card-border);
+        background: var(--card-bg);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      }
+      .inst-services-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+      .inst-services-table th,
+      .inst-services-table td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--card-border);
+      }
+      .inst-services-table th {
+        background: rgba(139, 92, 246, 0.12);
+        color: var(--text-primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.75rem;
+      }
+      .inst-services-table tbody tr:hover {
+        background: var(--card-hover);
+      }
+      .inst-services-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .inst-services-table .endpoint {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        color: var(--layer-institutions);
+      }
+      .inst-services-table .credentials {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
       }
 
       /* Connection indicators */
@@ -623,7 +777,7 @@
       <!-- Layer 5: User Interface (Top) -->
       <div class="layer layer-ui" id="layer-ui">
         <div class="layer-label">
-          <span>Layer 5</span>
+          <span>Layer 6</span>
           <span>User Interface</span>
         </div>
         <div class="layer-content">
@@ -657,8 +811,8 @@
       <!-- Gateway: Public side (Spring Cloud Gateway) -->
       <div class="layer layer-gateway" id="layer-gw-public">
         <div class="layer-label">
-          <span>Public</span>
-          <span>Entry</span>
+          <span>Layer 5</span>
+          <span>Public Entry Point</span>
         </div>
         <div class="layer-content">
           <div class="card" id="spring-cloud-gw" style="width: 300px">
@@ -681,6 +835,7 @@
             <div class="card-icon">🔔</div>
             <div class="card-title">Notification</div>
             <div class="card-subtitle">Service</div>
+            <div class="card-subtitle">/v2/notifications</div>
             <div class="tooltip">SMS, Email, Push alerts</div>
           </div>
           <div class="card clickable-orch" id="orch-core" style="transform: scale(1.05); border-width: 2px">
@@ -707,29 +862,33 @@
           <span>Microservices</span>
         </div>
         <div class="layer-content">
-          <div class="card" id="ms-dars">
+          <div class="card clickable-orch" id="ms-dars">
             <div class="card-icon">📄</div>
             <div class="card-title">DARS Service</div>
             <div class="card-subtitle">Document Authentication & Registration</div>
-            <div class="tooltip">Power of Attorney revocation; Contract amendment & termination; Declaration, Translation, Affidavit, True Copy; Memorandum of Association; Minute/Resolution (9 services)</div>
+            <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="ms-mor">
+          <div class="card clickable-orch" id="ms-mor">
             <div class="card-icon">🔢</div>
             <div class="card-title">MOR Service</div>
             <div class="card-subtitle">Tax & Revenue</div>
-            <div class="tooltip">Application for Taxpayer Identification Number (TIN) Registration — free, 30–45 min</div>
+            <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="ms-nid">
+          <div class="card clickable-orch" id="ms-nid">
             <div class="card-icon">🆔</div>
             <div class="card-title">NID Service</div>
             <div class="card-subtitle">Identification</div>
-            <div class="tooltip">National ID Verification</div>
+            <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="ms-motri">
+          <div class="card clickable-orch" id="ms-motri">
             <div class="card-icon">💼</div>
             <div class="card-title">MOTRI Service</div>
             <div class="card-subtitle">Trade & Business Registration</div>
-            <div class="tooltip">Business name approval, registration, amendment; Certificate & license replacement; Cancellation of license, name, registration (10 services)</div>
+            <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
         </div>
       </div>
@@ -757,144 +916,241 @@
           <span>Institutions</span>
         </div>
         <div class="layer-content">
-          <div class="card" id="inst-dars">
+          <div class="card clickable-orch" id="inst-dars">
             <div class="card-icon">🏛️</div>
             <div class="card-title">DARS</div>
             <div class="card-subtitle">Institution</div>
+            <div class="tooltip">Document Authentication &amp; Registration — Click to open services</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="inst-mor">
+          <div class="card clickable-orch" id="inst-mor">
             <div class="card-icon">🏛️</div>
             <div class="card-title">MOR</div>
             <div class="card-subtitle">Institution</div>
+            <div class="tooltip">Tax &amp; Revenue — Click to open services</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="inst-nid">
+          <div class="card clickable-orch" id="inst-nid">
             <div class="card-icon">🏛️</div>
             <div class="card-title">NID</div>
             <div class="card-subtitle">Institution</div>
+            <div class="tooltip">National ID — Click to open services</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="inst-motri">
+          <div class="card clickable-orch" id="inst-motri">
             <div class="card-icon">🏛️</div>
             <div class="card-title">MOTRI</div>
             <div class="card-subtitle">Institution</div>
+            <div class="tooltip">Trade &amp; Business Registration — Click to open services</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
         </div>
       </div>
     </div>
     </div>
 
-    <!-- Orchestration detail page (separate view) -->
+    <!-- Orchestration detail page — same layout & font as main diagram (800-957) -->
     <div id="view-orchestration" class="diagram-view hidden">
       <div class="orch-page">
         <div class="orch-page-bar">
           <button type="button" class="back-btn" id="backToOverallBtn" aria-label="Back to overall diagram">
             ← Back to overall
           </button>
-          <span class="orch-page-title">Orchestration Core (Brain) — services & connections</span>
+          <span class="orch-page-title">Orchestration — layers &amp; message flow</span>
         </div>
         <div class="orch-page-content">
-          <svg class="orch-connections" id="orchConnectionsSvg" xmlns="http://www.w3.org/2000/svg"></svg>
-          <div class="interaction-legend">
-            <div class="legend-title">🔗 Service connections</div>
-            <div class="legend-item"><span class="legend-arrow">→</span> Hover a service to highlight its connections</div>
-          </div>
+          <div class="architecture-container orch-view-container">
+            <!-- 4.1: Citizen & Service Management -->
+            <div class="layer layer-microservices">
+              <div class="layer-label">
+                <span>4.1</span>
+                <span>Citizen &amp; Service Mgmt</span>
+              </div>
+              <div class="layer-content">
+                <div class="card">
+                  <div class="card-icon">📋</div>
+                  <div class="card-title">Application Service</div>
+                  <div class="card-subtitle">/v2/applications</div>
+                  <div class="tooltip">Full lifecycle management of citizen service applications — submit, track, approve, reject</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">🏗️</div>
+                  <div class="card-title">Service Registry &amp; Dynamic Forms</div>
+                  <div class="card-subtitle">/v2/services · /v2/services/forms</div>
+                  <div class="tooltip">190+ government services with multi-language support (am, en, or, ti), fees, and steps with dynamic forms</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">📁</div>
+                  <div class="card-title">Document Management</div>
+                  <div class="card-subtitle">/v2/storage</div>
+                  <div class="tooltip">Scalable object storage for certificates, supporting docs, and digital assets</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">✅</div>
+                  <div class="card-title">Validation Service</div>
+                  <div class="card-subtitle">/v2/validation</div>
+                  <div class="tooltip">Data validation, business rule enforcement, and schema verification</div>
+                </div>
+              </div>
+            </div>
 
-          <div class="service-category">
-            <div class="category-title">Orchestration Core (Brain)</div>
-            <div class="services-grid">
-              <div class="card" data-service="workflow" data-connects-to="saga-state,circuit-breaker,audit-logger,error-handler,request-queue">
-                <span class="service-badge"></span>
-                <div class="card-icon">⚙️</div>
-                <div class="card-title">Workflow Engine</div>
-                <div class="card-subtitle">Saga orchestration</div>
-                <div class="tooltip">Controls saga steps · Manages transitions · Triggers compensation · Handles timeouts</div>
+            <!-- 4.2: Workflow Engine (Saga · BPMN) -->
+            <div class="layer layer-orchestration">
+              <div class="layer-label">
+                <span>4.2</span>
+                <span>Workflow Engine</span>
+              </div>
+              <div class="layer-content">
+                <div class="card">
+                  <div class="card-icon">⚙️</div>
+                  <div class="card-title">Workflow Engine</div>
+                  <div class="card-subtitle">/v2/workflows</div>
+                  <div class="tooltip">Distributed transactions using the Saga pattern for long-running multi-agency workflows</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">📐</div>
+                  <div class="card-title">BPMN Versioning</div>
+                  <div class="card-subtitle">/api/v2/admin/workflows/bpmn</div>
+                  <div class="tooltip">Upload and manage BPMN workflow definitions with versioned deployments</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">🔀</div>
+                  <div class="card-title">Step Orchestrator</div>
+                  <div class="card-subtitle">/api/v2/admin/workflows/steps</div>
+                  <div class="tooltip">Step ordering, timeout thresholds, circuit breakers, and manual retry/resume</div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- 4.3: External Integration (Payment, Event Bus) -->
+            <div class="layer layer-gateway">
+              <div class="layer-label">
+                <span>4.3</span>
+                <span>External Integration</span>
+              </div>
+              <div class="layer-content">
+                <div class="card">
+                  <div class="card-icon">💳</div>
+                  <div class="card-title">Payment Service</div>
+                  <div class="card-subtitle">/v2/payments</div>
+                  <div class="tooltip">TeleBirr, CBE Birr, bank transfers, USSD payments. PCI-DSS Level 1 compliant</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">🔁</div>
+                  <div class="card-title">Async Event Bus</div>
+                  <div class="card-subtitle">Event Bus</div>
+                  <div class="tooltip">Asynchronous callbacks and event-driven responses from ministry systems</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4.4: Observability & Control -->
+            <div class="layer layer-institutions">
+              <div class="layer-label">
+                <span>4.4</span>
+                <span>Observability &amp; Control</span>
+              </div>
+              <div class="layer-content">
+                <div class="card">
+                  <div class="card-icon">📜</div>
+                  <div class="card-title">Audit Service</div>
+                  <div class="card-subtitle">/v2/logs · /api/v2/admin/audit</div>
+                  <div class="tooltip">Immutable, cryptographically-signed audit trails. Legal investigation mode. Compliance exports.</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">📊</div>
+                  <div class="card-title">Monitoring</div>
+                  <div class="card-subtitle">/v2/monitoring</div>
+                  <div class="tooltip">OpenTelemetry tracing, Prometheus metrics, Grafana dashboards, SLA alerts</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">🔒</div>
+                  <div class="card-title">Health &amp; Control</div>
+                  <div class="card-subtitle">/api/v2/admin/health</div>
+                  <div class="tooltip">Circuit breakers, traffic drain, service disabling, stalled workflow retry/resume</div>
+                </div>
+                <div class="card">
+                  <div class="card-icon">📦</div>
+                  <div class="card-title">ELK Stack</div>
+                  <div class="card-subtitle">Internal Infrastructure</div>
+                  <div class="tooltip">Centralized log management (Elasticsearch + Logstash + Kibana) for forensic analysis</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4.4: Ministry Adapter (standalone) -->
+            <div class="layer layer-gateway">
+              <div class="layer-label">
+                <span>4.4</span>
+                <span>Ministry Adapter</span>
+              </div>
+              <div class="layer-content">
+                <div class="card orch-standalone-card">
+                  <div class="card-icon card-icon-oneline">🏛️ 🔁 🏛️</div>
+                  <div class="card-title">Ministry Adapter</div>
+                  <div class="card-subtitle">/v2/ministry</div>
+                  <div class="tooltip">Standardized integration with ministry-specific APIs and legacy government systems; translates request/response formats between platform and ministry APIs</div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="service-category">
-            <div class="category-title">Database & object storage</div>
-            <div class="services-grid">
-              <div class="card" data-service="storage" data-connects-to="saga-state">
-                <span class="service-badge"></span>
-                <div class="card-icon">🗄️</div>
-                <div class="card-title">Database & Object Storage</div>
-                <div class="card-subtitle">Persistence</div>
-                <div class="tooltip">Backing store for saga state and workflow data</div>
-              </div>
-            </div>
+    <!-- Institution detail page: services, endpoints, descriptions (opens when DARS/MOR/NID/MOTRI clicked) -->
+    <div id="view-institution" class="diagram-view hidden">
+      <div class="orch-page inst-detail-page">
+        <div class="orch-page-bar inst-detail-bar">
+          <button type="button" class="back-btn" id="backFromInstitutionBtn" aria-label="Back to overall diagram">
+            ← Back to overall
+          </button>
+          <span class="orch-page-title" id="instDetailTitle">Institution Services</span>
+        </div>
+        <div class="orch-page-content">
+          <div class="inst-table-wrap">
+            <table class="inst-services-table" id="instServicesTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Service</th>
+                  <th>API Endpoint</th>
+                  <th>Description</th>
+                  <th>Credentials</th>
+                </tr>
+              </thead>
+              <tbody id="instServicesTableBody"></tbody>
+            </table>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="service-category">
-            <div class="category-title">State & Data Management (Memory and Protection)</div>
-            <div class="services-grid">
-              <div class="card" data-service="saga-state" data-connects-to="workflow,storage">
-                <span class="service-badge"></span>
-                <div class="card-icon">💾</div>
-                <div class="card-title">Saga State Manager</div>
-                <div class="card-subtitle">Workflow state</div>
-                <div class="tooltip">Stores: Workflow ID · Current step · Status · Compensation status · Correlation ID · Retry count</div>
-              </div>
-              <div class="card" data-service="circuit-breaker" data-connects-to="workflow,error-handler">
-                <span class="service-badge"></span>
-                <div class="card-icon">⚡</div>
-                <div class="card-title">Circuit Breaker</div>
-                <div class="card-subtitle">Resilience</div>
-                <div class="tooltip">Prevents cascading failure · Protects orchestrator · Retry policy · Timeout management · Bulkhead isolation</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="service-category">
-            <div class="category-title">Security & Access Control</div>
-            <div class="services-grid">
-              <div class="card" data-service="api-key" data-connects-to="audit-logger">
-                <span class="service-badge"></span>
-                <div class="card-icon">🔑</div>
-                <div class="card-title">API Key Manager</div>
-                <div class="card-subtitle">Access control</div>
-                <div class="tooltip">Organization-level isolation</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="service-category">
-            <div class="category-title">Observability & Control</div>
-            <div class="services-grid">
-              <div class="card" data-service="audit-logger" data-connects-to="workflow,error-handler,api-key">
-                <span class="service-badge"></span>
-                <div class="card-icon">📜</div>
-                <div class="card-title">Audit Logger</div>
-                <div class="card-subtitle">Traceability</div>
-                <div class="tooltip">Who initiated request · When · What step executed · What data changed · Compensation events</div>
-              </div>
-              <div class="card" data-service="error-handler" data-connects-to="workflow,circuit-breaker,audit-logger">
-                <span class="service-badge"></span>
-                <div class="card-icon">🚨</div>
-                <div class="card-title">Error Handler</div>
-                <div class="card-subtitle">Failure handling</div>
-                <div class="tooltip">Classify errors (transient vs permanent) · Decide retry vs compensate · Trigger alerts</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="service-category">
-            <div class="category-title">Integration & Communication</div>
-            <div class="services-grid">
-              <div class="card" data-service="request-queue" data-connects-to="workflow,format-adapter">
-                <span class="service-badge"></span>
-                <div class="card-icon">📡</div>
-                <div class="card-title">Request Queue (between organizations)</div>
-                <div class="card-subtitle">Kafka, RabbitMQ</div>
-                <div class="tooltip">Makes the saga: Asynchronous · Resilient · Loosely coupled</div>
-              </div>
-              <div class="card" data-service="format-adapter" data-connects-to="request-queue">
-                <span class="service-badge"></span>
-                <div class="card-icon">🔄</div>
-                <div class="card-title">Request/Response Format Adapter</div>
-                <div class="card-subtitle">Format Organizer</div>
-                <div class="tooltip">Different schemas, protocols, error formats · Translate request → canonical · Translate response → canonical · Map error codes · Handle versioning</div>
-              </div>
-            </div>
+    <!-- Microservice detail page: same services via API Six Gateway (modified address & auth) -->
+    <div id="view-microservice" class="diagram-view hidden">
+      <div class="orch-page ms-detail-page">
+        <div class="orch-page-bar ms-detail-bar">
+          <button type="button" class="back-btn" id="backFromMicroserviceBtn" aria-label="Back to overall diagram">
+            ← Back to overall
+          </button>
+          <span class="orch-page-title" id="msDetailTitle">Service — via API Six Gateway</span>
+        </div>
+        <div class="orch-page-content">
+          <p class="ms-gateway-note">API Six Gateway receives these requests, then translates parameters and address to the institution backend.</p>
+          <div class="inst-table-wrap">
+            <table class="inst-services-table" id="msServicesTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Service</th>
+                  <th>API Endpoint (Gateway)</th>
+                  <th>Description</th>
+                  <th>Credentials (Gateway)</th>
+                </tr>
+              </thead>
+              <tbody id="msServicesTableBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -979,14 +1235,171 @@
       const viewOverall = document.getElementById('view-overall');
       const viewOrchestration = document.getElementById('view-orchestration');
       const viewIdentity = document.getElementById('view-identity');
+      const viewInstitution = document.getElementById('view-institution');
+      const viewMicroservice = document.getElementById('view-microservice');
       const orchCore = document.getElementById('orch-core');
       const orchId = document.getElementById('orch-id');
       const backToOverallBtn = document.getElementById('backToOverallBtn');
       const backFromIdentityBtn = document.getElementById('backFromIdentityBtn');
+      const backFromInstitutionBtn = document.getElementById('backFromInstitutionBtn');
+      const backFromMicroserviceBtn = document.getElementById('backFromMicroserviceBtn');
+      const instDetailTitle = document.getElementById('instDetailTitle');
+      const instServicesTableBody = document.getElementById('instServicesTableBody');
+      const msDetailTitle = document.getElementById('msDetailTitle');
+      const msServicesTableBody = document.getElementById('msServicesTableBody');
+
+      const INSTITUTION_SERVICES = {
+        'inst-dars': {
+          name: 'DARS — Document Authentication & Registration',
+          baseUrl: 'https://192.168.10.21:8443',
+          credentials: 'API Key (X-API-Key) + Client certificate (mTLS)',
+          services: [
+            { service: 'Minute/Resolution', endpoint: '/v2/dars/minute-resolution', description: 'Authenticating and Registering Minute/Resolution Document (Minutes/resolution of Plc. & one man plc. documents)' },
+            { service: 'True Copy', endpoint: '/v2/dars/true-copy', description: 'Authentication of copies of documents against their originals (True Copy of documents)' },
+            { service: 'Affidavit', endpoint: '/v2/dars/affidavit', description: 'Authenticating and registering Affidavit Document (Affidavit documents)' },
+            { service: 'Memorandum of Association', endpoint: '/v2/dars/memorandum', description: 'Authenticating and Registration of Memorandum of association Document (Memorandum of association of Plc. & one man plc. documents)' },
+            { service: 'Translation', endpoint: '/v2/dars/translation', description: 'Authenticating and Registration of Translation of Document (Translated documents)' },
+            { service: 'Declaration', endpoint: '/v2/dars/declaration', description: 'Authenticating and Registering Declaration Document (Declaration of consent documents)' },
+            { service: 'Contract Termination', endpoint: '/v2/dars/contract-termination', description: 'Termination of different contract documents' },
+            { service: 'Contract Registration', endpoint: '/v2/dars/contract-register', description: 'Authenticating and registering contract documents' },
+            { service: 'Power of Attorney Revocation', endpoint: '/v2/dars/power-of-attorney-revocation', description: 'Revocation/Renunciation of Power of Attorney (Revocation of Power of Attorney documents)' }
+          ]
+        },
+        'inst-mor': {
+          name: 'MOR — Tax & Revenue',
+          baseUrl: 'https://192.168.10.22:8443',
+          credentials: 'OAuth2 client_credentials + TIN scope (Bearer token)',
+          services: [
+            { service: 'TIN Registration', endpoint: '/v2/mor/tin-registration', description: 'Application for Taxpayer Identification Number (TIN) Registration' }
+          ]
+        },
+        'inst-nid': {
+          name: 'NID — National ID',
+          baseUrl: 'https://192.168.10.23:8443',
+          credentials: 'Biometric token + Organization ID (X-Org-Id header)',
+          services: [
+            { service: 'National ID Issuance', endpoint: '/v2/nid/issuance', description: 'National ID Issuance for Citizen Services' },
+            { service: 'Grievance Handling', endpoint: '/v2/nid/grievance', description: 'Grievance handling' },
+            { service: 'Geographical and Biometric Update', endpoint: '/v2/nid/update', description: 'Geographical and Biometric update' }
+          ]
+        },
+        'inst-motri': {
+          name: 'MOTRI — Trade & Business Registration',
+          baseUrl: 'https://192.168.10.24:8443',
+          credentials: 'API Key + Business registration ID (X-Business-Reg-Id)',
+          services: [
+            { service: 'Approval of Business Organization Name', endpoint: '/v2/motri/name-approval', description: 'Approval of Business Organization Name' },
+            { service: 'New Business Name Registration', endpoint: '/v2/motri/registration', description: 'New Business Name Registration' },
+            { service: 'Amendment of Business Organization Name', endpoint: '/v2/motri/amendment-org-name', description: 'Amendment of Business Organization Name' },
+            { service: 'Amendment of Business Name', endpoint: '/v2/motri/amendment-name', description: 'Amendment of Business Name' },
+            { service: 'Replacement of Business Registration Certificate', endpoint: '/v2/motri/replacement-certificate', description: 'Replacement of Business Registration Certificate' },
+            { service: 'Replacement of Business License', endpoint: '/v2/motri/replacement-license', description: 'Replacement of Business License' },
+            { service: 'Replacement of Business Name Certificate', endpoint: '/v2/motri/replacement-name-cert', description: 'Replacement of Business Name Certificate' },
+            { service: 'Cancellation of Business License', endpoint: '/v2/motri/cancellation-license', description: 'Cancellation of Business License' },
+            { service: 'Cancellation of Business Name', endpoint: '/v2/motri/cancellation-name', description: 'Cancellation of Business Name' },
+            { service: 'Cancellation of Business Registration', endpoint: '/v2/motri/cancellation-registration', description: 'Cancellation of Business Registration' }
+          ]
+        }
+      };
+
+      // Same services as above, but via API Six Gateway (modified address & auth for platform → institution)
+      const MICROSERVICE_SERVICES = {
+        'ms-dars': {
+          name: 'DARS Service — via API Six Gateway',
+          baseUrl: 'https://192.168.1.10:443',
+          credentials: 'JWT Bearer (platform) + X-Org-Id — Gateway translates to institution API Key + mTLS',
+          services: [
+            { service: 'Minute/Resolution', endpoint: '/v2/dars/minute-resolution', description: 'Authenticating and Registering Minute/Resolution Document (Minutes/resolution of Plc. & one man plc. documents)' },
+            { service: 'True Copy', endpoint: '/v2/dars/true-copy', description: 'Authentication of copies of documents against their originals (True Copy of documents)' },
+            { service: 'Affidavit', endpoint: '/v2/dars/affidavit', description: 'Authenticating and registering Affidavit Document (Affidavit documents)' },
+            { service: 'Memorandum of Association', endpoint: '/v2/dars/memorandum', description: 'Authenticating and Registration of Memorandum of association Document (Memorandum of association of Plc. & one man plc. documents)' },
+            { service: 'Translation', endpoint: '/v2/dars/translation', description: 'Authenticating and Registration of Translation of Document (Translated documents)' },
+            { service: 'Declaration', endpoint: '/v2/dars/declaration', description: 'Authenticating and Registering Declaration Document (Declaration of consent documents)' },
+            { service: 'Contract Termination', endpoint: '/v2/dars/contract-termination', description: 'Termination of different contract documents' },
+            { service: 'Contract Registration', endpoint: '/v2/dars/contract-register', description: 'Authenticating and registering contract documents' },
+            { service: 'Power of Attorney Revocation', endpoint: '/v2/dars/power-of-attorney-revocation', description: 'Revocation/Renunciation of Power of Attorney (Revocation of Power of Attorney documents)' }
+          ]
+        },
+        'ms-mor': {
+          name: 'MOR Service — via API Six Gateway',
+          baseUrl: 'https://192.168.1.10:443',
+          credentials: 'JWT Bearer (platform) + X-Org-Id — Gateway translates to OAuth2 + TIN scope for institution',
+          services: [
+            { service: 'TIN Registration', endpoint: '/v2/mor/tin-registration', description: 'Application for Taxpayer Identification Number (TIN) Registration' }
+          ]
+        },
+        'ms-nid': {
+          name: 'NID Service — via API Six Gateway',
+          baseUrl: 'https://192.168.1.10:443',
+          credentials: 'JWT Bearer (platform) + X-Org-Id — Gateway translates to Biometric token + Org ID for institution',
+          services: [
+            { service: 'National ID Issuance', endpoint: '/v2/nid/issuance', description: 'National ID Issuance for Citizen Services' },
+            { service: 'Grievance Handling', endpoint: '/v2/nid/grievance', description: 'Grievance handling' },
+            { service: 'Geographical and Biometric Update', endpoint: '/v2/nid/update', description: 'Geographical and Biometric update' }
+          ]
+        },
+        'ms-motri': {
+          name: 'MOTRI Service — via API Six Gateway',
+          baseUrl: 'https://192.168.1.10:443',
+          credentials: 'JWT Bearer (platform) + X-Org-Id — Gateway translates to API Key + Business Reg ID for institution',
+          services: [
+            { service: 'Approval of Business Organization Name', endpoint: '/v2/motri/name-approval', description: 'Approval of Business Organization Name' },
+            { service: 'New Business Name Registration', endpoint: '/v2/motri/registration', description: 'New Business Name Registration' },
+            { service: 'Amendment of Business Organization Name', endpoint: '/v2/motri/amendment-org-name', description: 'Amendment of Business Organization Name' },
+            { service: 'Amendment of Business Name', endpoint: '/v2/motri/amendment-name', description: 'Amendment of Business Name' },
+            { service: 'Replacement of Business Registration Certificate', endpoint: '/v2/motri/replacement-certificate', description: 'Replacement of Business Registration Certificate' },
+            { service: 'Replacement of Business License', endpoint: '/v2/motri/replacement-license', description: 'Replacement of Business License' },
+            { service: 'Replacement of Business Name Certificate', endpoint: '/v2/motri/replacement-name-cert', description: 'Replacement of Business Name Certificate' },
+            { service: 'Cancellation of Business License', endpoint: '/v2/motri/cancellation-license', description: 'Cancellation of Business License' },
+            { service: 'Cancellation of Business Name', endpoint: '/v2/motri/cancellation-name', description: 'Cancellation of Business Name' },
+            { service: 'Cancellation of Business Registration', endpoint: '/v2/motri/cancellation-registration', description: 'Cancellation of Business Registration' }
+          ]
+        }
+      };
+
+      function showInstitutionPage(instId) {
+        viewOverall.classList.add('hidden');
+        viewOrchestration.classList.add('hidden');
+        viewIdentity.classList.add('hidden');
+        viewMicroservice.classList.add('hidden');
+        viewInstitution.classList.remove('hidden');
+        const data = INSTITUTION_SERVICES[instId];
+        if (!data || !instDetailTitle || !instServicesTableBody) return;
+        instDetailTitle.textContent = data.name;
+        const baseUrl = data.baseUrl || '';
+        instServicesTableBody.innerHTML = data.services.map((row, i) => {
+          const fullEndpoint = baseUrl + row.endpoint;
+          return '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(row.service) + '</td><td><code class="endpoint">' + escapeHtml(fullEndpoint) + '</code></td><td>' + escapeHtml(row.description) + '</td><td class="credentials">' + escapeHtml(data.credentials) + '</td></tr>';
+        }).join('');
+      }
+
+      function showMicroservicePage(msId) {
+        viewOverall.classList.add('hidden');
+        viewOrchestration.classList.add('hidden');
+        viewIdentity.classList.add('hidden');
+        viewInstitution.classList.add('hidden');
+        viewMicroservice.classList.remove('hidden');
+        const data = MICROSERVICE_SERVICES[msId];
+        if (!data || !msDetailTitle || !msServicesTableBody) return;
+        msDetailTitle.textContent = data.name;
+        const baseUrl = data.baseUrl || '';
+        msServicesTableBody.innerHTML = data.services.map((row, i) => {
+          const fullEndpoint = baseUrl + row.endpoint;
+          return '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(row.service) + '</td><td><code class="endpoint">' + escapeHtml(fullEndpoint) + '</code></td><td>' + escapeHtml(row.description) + '</td><td class="credentials">' + escapeHtml(data.credentials) + '</td></tr>';
+        }).join('');
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
       function showOrchestrationPage() {
         viewOverall.classList.add('hidden');
         viewIdentity.classList.add('hidden');
+        viewInstitution.classList.add('hidden');
+        viewMicroservice.classList.add('hidden');
         viewOrchestration.classList.remove('hidden');
         setTimeout(drawOrchConnections, 200);
       }
@@ -994,12 +1407,16 @@
       function showIdentityPage() {
         viewOverall.classList.add('hidden');
         viewOrchestration.classList.add('hidden');
+        viewInstitution.classList.add('hidden');
+        viewMicroservice.classList.add('hidden');
         viewIdentity.classList.remove('hidden');
       }
 
       function showOverallPage() {
         viewOrchestration.classList.add('hidden');
         viewIdentity.classList.add('hidden');
+        viewInstitution.classList.add('hidden');
+        viewMicroservice.classList.add('hidden');
         viewOverall.classList.remove('hidden');
       }
 
@@ -1015,11 +1432,39 @@
         });
       }
 
+      ['inst-dars', 'inst-mor', 'inst-nid', 'inst-motri'].forEach(instId => {
+        const el = document.getElementById(instId);
+        if (el) {
+          el.style.cursor = 'pointer';
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showInstitutionPage(instId);
+          });
+        }
+      });
+
+      ['ms-dars', 'ms-mor', 'ms-nid', 'ms-motri'].forEach(msId => {
+        const el = document.getElementById(msId);
+        if (el) {
+          el.style.cursor = 'pointer';
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showMicroservicePage(msId);
+          });
+        }
+      });
+
       if (backToOverallBtn) {
         backToOverallBtn.addEventListener('click', showOverallPage);
       }
       if (backFromIdentityBtn) {
         backFromIdentityBtn.addEventListener('click', showOverallPage);
+      }
+      if (backFromInstitutionBtn) {
+        backFromInstitutionBtn.addEventListener('click', showOverallPage);
+      }
+      if (backFromMicroserviceBtn) {
+        backFromMicroserviceBtn.addEventListener('click', showOverallPage);
       }
 
       // Draw connection lines between services on orchestration page
@@ -1174,6 +1619,9 @@
       // Small delay to ensure layout is done
       setTimeout(drawConnections, 100);
     </script>
-  
 
-</body></html>
+    <footer class="page-footer">
+      <p>© Ethiopian Artificial Intelligence Institute — Last update Feb 22, 2026</p>
+    </footer>
+  </body>
+</html>
