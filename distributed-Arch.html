@@ -103,7 +103,7 @@
       .architecture-container {
         flex: 1;
         display: grid;
-        grid-template-rows: repeat(5, auto);
+        grid-template-rows: repeat(6, auto);
         gap: 40px;
         padding: 40px;
         max-width: 1400px;
@@ -413,6 +413,30 @@
         opacity: 0.3;
       }
 
+      /* Identity / Auth detail page */
+      .identity-page-bar {
+        border-bottom-color: var(--layer-gateway) !important;
+      }
+      .identity-page-title {
+        color: var(--layer-gateway) !important;
+      }
+      .identity-back-btn {
+        background: var(--layer-gateway);
+        color: #0f172a;
+      }
+      .identity-back-btn:hover {
+        box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+      }
+      .identity-page .category-title {
+        border-left-color: var(--layer-gateway);
+      }
+      .identity-service-card {
+        border-top: 3px solid var(--layer-gateway);
+      }
+      .identity-service-card:hover {
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+      }
+
       /* Connection indicators */
       .service-badge {
         position: absolute;
@@ -615,6 +639,34 @@
             <div class="card-subtitle">React Dashboard</div>
             <div class="tooltip">Responsive web interface</div>
           </div>
+          <div class="card" id="ui-kiosk">
+            <div class="card-icon">🖥️</div>
+            <div class="card-title">Kiosk</div>
+            <div class="card-subtitle">Self-service terminal</div>
+            <div class="tooltip">On-site public kiosk access</div>
+          </div>
+          <div class="card" id="ui-ussd">
+            <div class="card-icon">📟</div>
+            <div class="card-title">USSD</div>
+            <div class="card-subtitle">Short code</div>
+            <div class="tooltip">Mobile USSD for low-connectivity access</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gateway: Public side (Spring Cloud Gateway) -->
+      <div class="layer layer-gateway" id="layer-gw-public">
+        <div class="layer-label">
+          <span>Public</span>
+          <span>Entry</span>
+        </div>
+        <div class="layer-content">
+          <div class="card" id="spring-cloud-gw" style="width: 300px">
+            <div class="card-icon">🚪</div>
+            <div class="card-title">Spring Cloud Gateway</div>
+            <div class="card-subtitle">Public / Citizen access</div>
+            <div class="tooltip">Routing, Rate Limiting, JWT validation, TLS</div>
+          </div>
         </div>
       </div>
 
@@ -638,11 +690,12 @@
             <div class="tooltip">Workflow manager & coordination</div>
             <div class="clickable-indicator">Click to open</div>
           </div>
-          <div class="card" id="orch-id">
+          <div class="card clickable-orch" id="orch-id" style="cursor: pointer;">
             <div class="card-icon">🔐</div>
             <div class="card-title">Identity Mgmt</div>
             <div class="card-subtitle">IAM Service</div>
-            <div class="tooltip">Authentication & Authorization</div>
+            <div class="tooltip">Authentication &amp; Authorization — Click to open</div>
+            <div class="clickable-indicator">Click to open</div>
           </div>
         </div>
       </div>
@@ -681,18 +734,18 @@
         </div>
       </div>
 
-      <!-- Layer 2: API Gateway -->
+      <!-- Layer 2: API Gateway (Organizations side) -->
       <div class="layer layer-gateway" id="layer-gw">
         <div class="layer-label">
           <span>Layer 2</span>
-          <span>API Gateway</span>
+          <span>Organizations</span>
         </div>
         <div class="layer-content">
           <div class="card" id="api-gw" style="width: 300px">
             <div class="card-icon">🚪</div>
-            <div class="card-title">API Gateway</div>
-            <div class="card-subtitle">Central Entry Point</div>
-            <div class="tooltip">Routing, Rate Limiting, Security</div>
+            <div class="card-title">API Six Gateway</div>
+            <div class="card-subtitle">Organization / Institution side</div>
+            <div class="tooltip">Backend routing to DARS, MOR, NID, MOTRI</div>
           </div>
         </div>
       </div>
@@ -847,6 +900,68 @@
       </div>
     </div>
 
+    <!-- Identity / Auth detail page (separate view) -->
+    <div id="view-identity" class="diagram-view hidden">
+      <div class="orch-page identity-page">
+        <div class="orch-page-bar identity-page-bar">
+          <button type="button" class="back-btn identity-back-btn" id="backFromIdentityBtn" aria-label="Back to overall diagram">
+            ← Back to overall
+          </button>
+          <span class="orch-page-title identity-page-title">Authentication &amp; Authorization Service</span>
+        </div>
+        <div class="orch-page-content">
+          <div class="interaction-legend">
+            <div class="legend-title">🔐 Identity services</div>
+            <div class="legend-item"><span class="legend-arrow">→</span> Services connected and running under Authentication &amp; Authorization</div>
+          </div>
+
+          <div class="service-category">
+            <div class="category-title">Citizen Identity</div>
+            <div class="services-grid">
+              <div class="card identity-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">🪪</div>
+                <div class="card-title">VeriFayda 2.0</div>
+                <div class="card-subtitle">National biometric identity</div>
+                <div class="tooltip">National biometric identity verification for Ethiopian citizens</div>
+                <div style="margin-top:8px; font-family: monospace; font-size: 10px; color: var(--text-secondary);">/v2/auth/verifayda</div>
+              </div>
+              <div class="card identity-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">🔑</div>
+                <div class="card-title">Local Auth</div>
+                <div class="card-subtitle">Email / password, OTP MFA</div>
+                <div class="tooltip">Email/password login, OTP-based MFA, foreign national support</div>
+                <div style="margin-top:8px; font-family: monospace; font-size: 10px; color: var(--text-secondary);">/v2/auth/login</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="service-category">
+            <div class="category-title">Token &amp; Access Control</div>
+            <div class="services-grid">
+              <div class="card identity-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">🔄</div>
+                <div class="card-title">Token Management</div>
+                <div class="card-subtitle">JWT, refresh, revocation</div>
+                <div class="tooltip">JWT issuance, refresh, revocation, and role-based access control</div>
+                <div style="margin-top:8px; font-family: monospace; font-size: 10px; color: var(--text-secondary);">/v2/auth/token</div>
+              </div>
+              <div class="card identity-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">🛡️</div>
+                <div class="card-title">Admin Auth + MFA</div>
+                <div class="card-subtitle">Privileged access</div>
+                <div class="tooltip">Enhanced MFA for administrative operations and privileged access</div>
+                <div style="margin-top:8px; font-family: monospace; font-size: 10px; color: var(--text-secondary);">/api/v2/admin</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Theme Toggle Logic
       const themeBtn = document.getElementById('themeBtn');
@@ -860,20 +975,31 @@
         drawConnections(); // Redraw lines for new colors
       });
 
-      // Navigate to orchestration page (separate view)
+      // Navigate between views
       const viewOverall = document.getElementById('view-overall');
       const viewOrchestration = document.getElementById('view-orchestration');
+      const viewIdentity = document.getElementById('view-identity');
       const orchCore = document.getElementById('orch-core');
+      const orchId = document.getElementById('orch-id');
       const backToOverallBtn = document.getElementById('backToOverallBtn');
+      const backFromIdentityBtn = document.getElementById('backFromIdentityBtn');
 
       function showOrchestrationPage() {
         viewOverall.classList.add('hidden');
+        viewIdentity.classList.add('hidden');
         viewOrchestration.classList.remove('hidden');
         setTimeout(drawOrchConnections, 200);
       }
 
+      function showIdentityPage() {
+        viewOverall.classList.add('hidden');
+        viewOrchestration.classList.add('hidden');
+        viewIdentity.classList.remove('hidden');
+      }
+
       function showOverallPage() {
         viewOrchestration.classList.add('hidden');
+        viewIdentity.classList.add('hidden');
         viewOverall.classList.remove('hidden');
       }
 
@@ -882,8 +1008,18 @@
         showOrchestrationPage();
       });
 
+      if (orchId) {
+        orchId.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showIdentityPage();
+        });
+      }
+
       if (backToOverallBtn) {
         backToOverallBtn.addEventListener('click', showOverallPage);
+      }
+      if (backFromIdentityBtn) {
+        backFromIdentityBtn.addEventListener('click', showOverallPage);
       }
 
       // Draw connection lines between services on orchestration page
@@ -987,59 +1123,48 @@
         const svg = document.getElementById('svgLayer');
         svg.innerHTML = ''; // Clear previous lines
 
-        // 1. Institutions -> Gateway
-        const gateway = document.getElementById('api-gw');
+        const springGw = document.getElementById('spring-cloud-gw');
+        const apiSixGw = document.getElementById('api-gw');
         const instIds = ['inst-dars', 'inst-mor', 'inst-nid', 'inst-motri'];
-
-        instIds.forEach((id) => {
-          const inst = document.getElementById(id);
-          // Draw from Institution (Bottom) UP to Gateway (Top)
-          // My helper draws from "Start" (Lower) top-edge to "End" (Upper) bottom-edge
-          // So: start=inst, end=gateway is NOT right visually because inst is below gateway in HTML order but visually at bottom?
-          // Wait, HTML order is top-down (Layer 5 first).
-          // Visually on screen:
-          // Layer 5 (Top)
-          // ...
-          // Layer 1 (Bottom)
-
-          // So Gateway is ABOVE Institutions.
-          // We want line from Top of Institution to Bottom of Gateway.
-          drawLine(svg, inst, gateway);
-        });
-
-        // 2. Gateway -> Microservices
         const msIds = ['ms-dars', 'ms-mor', 'ms-nid', 'ms-motri'];
-        msIds.forEach((id) => {
-          const ms = document.getElementById(id);
-          // Gateway is BELOW Microservices visually?
-          // Layer 2 (GW) is below Layer 3 (MS).
-          // So line from Top of Gateway to Bottom of MS.
-          drawLine(svg, gateway, ms);
-        });
-
-        // 3. Microservices -> Orchestration
-        // All MS connect to Orchestration Core
         const orchCore = document.getElementById('orch-core');
-        msIds.forEach((id) => {
-          const ms = document.getElementById(id);
-          drawLine(svg, ms, orchCore);
-        });
-
-        // Support services connection (bidirectional implication, just draw lines to core)
-        const orchNotif = document.getElementById('orch-notif');
-        const orchId = document.getElementById('orch-id');
-        // Connect support to core laterally or just leave them in group?
-        // Let's connect MS to Support services too for "Notification" and "Identity" access as implied
-        // To keep it clean, let's connect Support services to Core
-        // Lateral connections are tricky with my vertical logic.
-        // Let's just connect Orchestration Core to UI
-
-        // 4. Orchestration -> UI
         const uiMobile = document.getElementById('ui-mobile');
         const uiWeb = document.getElementById('ui-web');
 
-        drawLine(svg, orchCore, uiMobile);
-        drawLine(svg, orchCore, uiWeb);
+        // 1. Institutions -> API Six Gateway (organizations side)
+        instIds.forEach((id) => {
+          const inst = document.getElementById(id);
+          if (inst && apiSixGw) drawLine(svg, inst, apiSixGw);
+        });
+
+        // 2. API Six Gateway -> Microservices
+        msIds.forEach((id) => {
+          const ms = document.getElementById(id);
+          if (apiSixGw && ms) drawLine(svg, apiSixGw, ms);
+        });
+
+        // 3. Microservices -> Orchestration Core
+        msIds.forEach((id) => {
+          const ms = document.getElementById(id);
+          if (ms && orchCore) drawLine(svg, ms, orchCore);
+        });
+
+        // 4. Orchestration Core -> Spring Cloud Gateway (public side)
+        if (orchCore && springGw) drawLine(svg, orchCore, springGw);
+
+        // 5. Spring Cloud Gateway -> Identity Mgmt & Notification
+        const orchId = document.getElementById('orch-id');
+        const orchNotif = document.getElementById('orch-notif');
+        if (springGw && orchId) drawLine(svg, springGw, orchId);
+        if (springGw && orchNotif) drawLine(svg, springGw, orchNotif);
+
+        // 6. Spring Cloud Gateway -> UI (Mobile, Web, Kiosk, USSD)
+        const uiKiosk = document.getElementById('ui-kiosk');
+        const uiUssd = document.getElementById('ui-ussd');
+        if (springGw && uiMobile) drawLine(svg, springGw, uiMobile);
+        if (springGw && uiWeb) drawLine(svg, springGw, uiWeb);
+        if (springGw && uiKiosk) drawLine(svg, springGw, uiKiosk);
+        if (springGw && uiUssd) drawLine(svg, springGw, uiUssd);
       }
 
       // Handle resize
