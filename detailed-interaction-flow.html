@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUEGP - Detailed Interaction Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        .timeline-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .service-box {
+            transition: all 0.3s ease;
+        }
+        
+        .service-box.active {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .arrow-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 2s linear forwards;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            overflow-x: auto;
+        }
+        
+        .method-badge {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .method-get { background: #10b981; color: white; }
+        .method-post { background: #3b82f6; color: white; }
+        .method-put { background: #f59e0b; color: white; }
+        
+        .status-200 { background: #10b981; color: white; }
+        .status-400 { background: #ef4444; color: white; }
+        .status-401 { background: #f59e0b; color: white; }
+        
+        .protocol-badge {
+            background: #8b5cf6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg shadow-xl p-8 mb-8">
+            <h1 class="text-4xl font-bold mb-2">Detailed Interaction Flow</h1>
+            <p class="text-purple-100 text-lg">Complete technical breakdown of service-to-service communication</p>
+        </div>
+
+        <!-- Scenario Selector -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Select Scenario</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <button onclick="loadFlow('business-license')" class="p-4 border-2 border-purple-400 rounded-lg hover:bg-purple-50 transition">
+                    <div class="text-3xl mb-2">🏢</div>
+                    <div class="font-semibold text-sm">Business License</div>
+                </button>
+                <button onclick="loadFlow('authentication')" class="p-4 border-2 border-green-400 rounded-lg hover:bg-green-50 transition">
+                    <div class="text-3xl mb-2">🔐</div>
+                    <div class="font-semibold text-sm">Authentication</div>
+                </button>
+                <button onclick="loadFlow('validation')" class="p-4 border-2 border-red-400 rounded-lg hover:bg-red-50 transition">
+                    <div class="text-3xl mb-2">✅</div>
+                    <div class="font-semibold text-sm">Validation Check</div>
+                </button>
+                <button onclick="loadFlow('payment')" class="p-4 border-2 border-emerald-400 rounded-lg hover:bg-emerald-50 transition">
+                    <div class="text-3xl mb-2">💳</div>
+                    <div class="font-semibold text-sm">Payment Flow</div>
+                </button>
+                <button onclick="loadFlow('notification')" class="p-4 border-2 border-blue-400 rounded-lg hover:bg-blue-50 transition">
+                    <div class="text-3xl mb-2">🔔</div>
+                    <div class="font-semibold text-sm">Notification</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Timeline Container -->
+        <div id="timelineContainer"></div>
+
+        <!-- Legend -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Legend</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                    <div class="font-semibold text-sm mb-2">HTTP Methods</div>
+                    <div class="space-y-1">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="method-badge method-post">POST</span>
+                        <span class="method-badge method-put">PUT</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-sm mb-2">Status Codes</div>
+                    <div class="space-y-1">
+                        <span class="method-badge status-200">200 OK</span>
+                        <span class="method-badge status-400">400 Error</span>
+                        <span class="method-badge status-401">401 Unauthorized</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-sm mb-2">Protocols</div>
+                    <div class="space-y-1">
+                        <span class="protocol-badge">HTTP/REST</span>
+                        <span class="protocol-badge">Kafka/Events</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-semibold text-sm mb-2">Data Format</div>
+                    <div class="space-y-1">
+                        <span class="text-xs bg-gray-200 px-2 py-1 rounded">JSON</span>
+                        <span class="text-xs bg-gray-200 px-2 py-1 rounded">JWT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const flows = {
+            'business-license': {
+                title: 'Business License - Complete Flow',
+                description: 'End-to-end flow from login to document delivery',
+                steps: [
+                    {
+                        step: 1,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/auth/login',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'User-Agent': 'Mesob-Portal/1.0'
+                        },
+                        request: {
+                            username: 'john.doe@example.com',
+                            password: '********',
+                            rememberMe: true,
+                            deviceId: 'device-uuid-123'
+                        },
+                        processing: 'API Gateway validates request format, checks rate limits (100 req/min), and forwards to Authentication Service',
+                        condition: 'User clicks "Login" button after entering credentials',
+                        timing: '< 50ms'
+                    },
+                    {
+                        step: 2,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Authentication Service', icon: '🔐', color: 'green' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/internal/auth/validate',
+                        headers: {
+                            'X-Request-ID': 'req-uuid-456',
+                            'X-Forwarded-For': '192.168.1.100',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            credentials: {
+                                username: 'john.doe@example.com',
+                                passwordHash: 'bcrypt-hash-here'
+                            },
+                            metadata: {
+                                ipAddress: '192.168.1.100',
+                                userAgent: 'Mesob-Portal/1.0',
+                                deviceId: 'device-uuid-123'
+                            }
+                        },
+                        processing: 'Authentication Service verifies credentials against database, checks account status (active/locked), validates password hash using bcrypt',
+                        condition: 'Valid credentials format received',
+                        timing: '100-200ms'
+                    },
+                    {
+                        step: 3,
+                        from: { name: 'Authentication Service', icon: '🔐', color: 'green' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/REST',
+                        method: 'RESPONSE',
+                        statusCode: '200 OK',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Request-ID': 'req-uuid-456'
+                        },
+                        response: {
+                            success: true,
+                            userId: 'usr-123456',
+                            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                            refreshToken: 'refresh-token-xyz',
+                            expiresIn: 3600,
+                            user: {
+                                id: 'usr-123456',
+                                name: 'John Doe',
+                                email: 'john.doe@example.com',
+                                roles: ['citizen']
+                            }
+                        },
+                        processing: 'JWT token generated with user claims (userId, roles, permissions), signed with HS256 algorithm, valid for 1 hour',
+                        condition: 'Credentials valid and account active',
+                        timing: '50-100ms'
+                    },
+                    {
+                        step: 4,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Service Catalog', icon: '📚', color: 'yellow' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: '/api/services?category=business&language=en',
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGci...',
+                            'Accept-Language': 'en',
+                            'Content-Type': 'application/json'
+                        },
+                        processing: 'Service Catalog queries database filtered by category, retrieves multilingual metadata, includes provider mappings',
+                        condition: 'User authenticated, searches for business services',
+                        timing: '100-150ms',
+                        response: {
+                            services: [
+                                {
+                                    id: 'svc-business-license',
+                                    name: 'Business License Application',
+                                    category: 'business',
+                                    provider: 'Ministry of Trade',
+                                    fee: 500.00,
+                                    currency: 'ETB',
+                                    processingTime: '5 business days',
+                                    requirements: [
+                                        'National ID',
+                                        'Business Plan',
+                                        'Lease Agreement'
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        step: 5,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/validate/business-name',
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGci...',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            businessName: 'ABC Trading PLC',
+                            businessType: 'PLC',
+                            region: 'Addis Ababa',
+                            sector: 'Import/Export'
+                        },
+                        processing: 'Validation Service checks business name uniqueness, applies naming rules, queries external registries',
+                        condition: 'User enters business name and tabs out of field (blur event)',
+                        timing: '200-500ms'
+                    },
+                    {
+                        step: 6,
+                        from: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        to: { name: 'Ministry of Trade', icon: '🏛️', color: 'orange' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: '/api/registry/check-name',
+                        headers: {
+                            'X-API-Key': 'ministry-api-key-secret',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            name: 'ABC Trading PLC',
+                            type: 'PLC',
+                            region: 'Addis Ababa'
+                        },
+                        processing: 'Ministry database performs fuzzy matching, checks exact matches, returns similar names if any exist',
+                        condition: 'Validation service requires external registry check',
+                        timing: '300-800ms',
+                        response: {
+                            available: true,
+                            exactMatch: false,
+                            similarNames: [
+                                'ABC Import Export',
+                                'AB Trading PLC'
+                            ],
+                            registeredCount: 0
+                        }
+                    },
+                    {
+                        step: 7,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Application Service', icon: '📝', color: 'indigo' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/applications',
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGci...',
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        request: {
+                            serviceId: 'svc-business-license',
+                            applicant: {
+                                userId: 'usr-123456',
+                                nationalId: 'ET-12345678'
+                            },
+                            businessInfo: {
+                                name: 'ABC Trading PLC',
+                                type: 'PLC',
+                                sector: 'Import/Export',
+                                capital: 500000,
+                                owners: [
+                                    {
+                                        name: 'John Doe',
+                                        share: 60,
+                                        nationalId: 'ET-12345678'
+                                    }
+                                ]
+                            },
+                            documents: [
+                                'business-plan.pdf',
+                                'lease-agreement.pdf',
+                                'id-copy.pdf'
+                            ]
+                        },
+                        processing: 'Application Service validates all fields, generates unique application ID (ET-2026-XXXXX), stores in database, creates audit log entry',
+                        condition: 'All validations passed, required documents uploaded, user clicks Submit',
+                        timing: '500-1000ms',
+                        response: {
+                            applicationId: 'ET-2026-00123',
+                            status: 'submitted',
+                            submittedAt: '2026-03-03T10:30:00Z',
+                            referenceNumber: 'BL-2026-00123',
+                            nextSteps: [
+                                'Ministry review (3-5 days)',
+                                'Payment required after approval',
+                                'License issuance'
+                            ]
+                        }
+                    },
+                    {
+                        step: 8,
+                        from: { name: 'Application Service', icon: '📝', color: 'indigo' },
+                        to: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/internal/workflows/start',
+                        headers: {
+                            'X-Internal-Auth': 'service-token',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            workflowType: 'business-license-application',
+                            applicationId: 'ET-2026-00123',
+                            context: {
+                                userId: 'usr-123456',
+                                serviceId: 'svc-business-license',
+                                providerId: 'ministry-trade',
+                                businessType: 'PLC'
+                            },
+                            steps: [
+                                'ministry_review',
+                                'payment_collection',
+                                'final_approval',
+                                'license_generation',
+                                'document_delivery'
+                            ]
+                        },
+                        processing: 'Orchestration Engine (Camunda) creates workflow instance, initializes state machine, sets up timers and timeouts',
+                        condition: 'Application successfully created in database',
+                        timing: '100-200ms',
+                        response: {
+                            workflowId: 'wf-2026-abc123',
+                            instanceId: 'instance-xyz789',
+                            currentStep: 'ministry_review',
+                            status: 'active'
+                        }
+                    },
+                    {
+                        step: 9,
+                        from: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        to: { name: 'Event Bus (Kafka)', icon: '📡', color: 'violet' },
+                        protocol: 'Kafka/Event',
+                        topic: 'application.events',
+                        eventType: 'ApplicationSubmitted',
+                        headers: {
+                            'event-id': 'evt-123456',
+                            'event-timestamp': '2026-03-03T10:30:05Z',
+                            'event-version': '1.0'
+                        },
+                        payload: {
+                            eventType: 'ApplicationSubmitted',
+                            eventId: 'evt-123456',
+                            timestamp: '2026-03-03T10:30:05Z',
+                            data: {
+                                applicationId: 'ET-2026-00123',
+                                userId: 'usr-123456',
+                                serviceType: 'business-license',
+                                status: 'submitted',
+                                workflowId: 'wf-2026-abc123'
+                            }
+                        },
+                        processing: 'Event published to Kafka topic, partitioned by applicationId, replicated across 3 brokers for durability',
+                        condition: 'Workflow successfully initialized',
+                        timing: '< 10ms'
+                    },
+                    {
+                        step: 10,
+                        from: { name: 'Event Bus (Kafka)', icon: '📡', color: 'violet' },
+                        to: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        protocol: 'Kafka/Subscribe',
+                        consumerGroup: 'notification-service-group',
+                        processing: 'Notification Service consumes event from Kafka, checks user notification preferences, selects appropriate channels (SMS/Email)',
+                        condition: 'ApplicationSubmitted event available in topic',
+                        timing: '50-100ms',
+                        action: {
+                            type: 'SEND_NOTIFICATION',
+                            channels: ['SMS', 'EMAIL'],
+                            template: 'application-submitted',
+                            variables: {
+                                applicationId: 'ET-2026-00123',
+                                userName: 'John Doe',
+                                serviceName: 'Business License'
+                            }
+                        }
+                    },
+                    {
+                        step: 11,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'Client (SMS)', icon: '📱', color: 'blue' },
+                        protocol: 'SMS/Twilio',
+                        provider: 'Twilio SMS Gateway',
+                        message: 'Your Business License application ET-2026-00123 has been received by Ministry of Trade. Track status at portal.gov.et',
+                        processing: 'Notification Service calls Twilio API, message queued for delivery, delivery receipt tracked',
+                        condition: 'User has valid phone number in profile',
+                        timing: '1-3 seconds',
+                        response: {
+                            messageId: 'SM-twilio-abc123',
+                            status: 'queued',
+                            to: '+251911234567',
+                            estimatedDelivery: '2026-03-03T10:30:10Z'
+                        }
+                    },
+                    {
+                        step: 12,
+                        from: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        to: { name: 'Ministry of Trade Adapter', icon: '🏛️', color: 'orange' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: 'https://api.trade.gov.et/v1/applications',
+                        headers: {
+                            'Authorization': 'Bearer ministry-token',
+                            'X-Correlation-ID': 'corr-xyz789',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            externalId: 'ET-2026-00123',
+                            applicationType: 'NEW_LICENSE',
+                            businessData: {
+                                name: 'ABC Trading PLC',
+                                type: 'PLC',
+                                sector: 'Import/Export',
+                                capital: 500000
+                            },
+                            documents: [
+                                {
+                                    type: 'business_plan',
+                                    url: 'https://storage.nuegp.gov.et/docs/business-plan.pdf',
+                                    hash: 'sha256-hash'
+                                }
+                            ],
+                            callback: {
+                                url: 'https://api.nuegp.gov.et/callbacks/ministry-trade',
+                                events: ['status_change', 'review_complete', 'approval']
+                            }
+                        },
+                        processing: 'Ministry adapter transforms NUEGP format to Ministry API format, handles authentication, implements retry logic with exponential backoff',
+                        condition: 'Workflow step: ministry_review, all documents uploaded',
+                        timing: '500-2000ms',
+                        response: {
+                            ministryApplicationId: 'MOT-2026-5678',
+                            status: 'received',
+                            assignedReviewer: 'officer-123',
+                            estimatedReviewDate: '2026-03-08T00:00:00Z'
+                        }
+                    },
+                    {
+                        step: 13,
+                        from: { name: 'Ministry of Trade', icon: '🏛️', color: 'orange' },
+                        to: { name: 'Ministry Adapter (Webhook)', icon: '🔗', color: 'orange' },
+                        protocol: 'HTTP/REST (Webhook)',
+                        method: 'POST',
+                        endpoint: 'https://api.nuegp.gov.et/webhooks/ministry-trade',
+                        headers: {
+                            'X-Ministry-Signature': 'hmac-sha256-signature',
+                            'Content-Type': 'application/json'
+                        },
+                        payload: {
+                            eventType: 'REVIEW_APPROVED',
+                            ministryApplicationId: 'MOT-2026-5678',
+                            externalId: 'ET-2026-00123',
+                            status: 'approved',
+                            reviewedBy: 'officer-123',
+                            reviewedAt: '2026-03-05T14:30:00Z',
+                            comments: 'All documents verified. Proceed to payment.',
+                            nextAction: 'PAYMENT_REQUIRED',
+                            paymentAmount: 500.00
+                        },
+                        processing: 'Ministry system sends webhook after officer approval, HMAC signature verified by adapter, payload validated',
+                        condition: 'Ministry officer completes review and approves application',
+                        timing: 'Triggered by ministry action'
+                    },
+                    {
+                        step: 14,
+                        from: { name: 'Ministry Adapter', icon: '🔗', color: 'orange' },
+                        to: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/internal/workflows/update',
+                        request: {
+                            workflowId: 'wf-2026-abc123',
+                            event: 'MINISTRY_APPROVED',
+                            data: {
+                                status: 'approved',
+                                nextStep: 'payment_collection',
+                                paymentAmount: 500.00
+                            }
+                        },
+                        processing: 'Orchestration Engine updates workflow state, triggers payment collection step, sets timeout for payment (24 hours)',
+                        condition: 'Valid webhook received from ministry',
+                        timing: '50-100ms'
+                    },
+                    {
+                        step: 15,
+                        from: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        to: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/payments/create',
+                        request: {
+                            applicationId: 'ET-2026-00123',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            purpose: 'Business License Fee',
+                            userId: 'usr-123456',
+                            callbackUrl: 'https://api.nuegp.gov.et/callbacks/payment',
+                            expiresIn: 86400
+                        },
+                        processing: 'Payment Gateway generates payment reference, creates QR code, integrates with Telebirr/CBE APIs',
+                        condition: 'Ministry approval received, payment required',
+                        timing: '200-500ms',
+                        response: {
+                            paymentId: 'pay-2026-xyz123',
+                            paymentReference: 'REF-ABC123',
+                            amount: 500.00,
+                            qrCode: 'base64-qr-code-data',
+                            paymentUrl: 'https://payment.nuegp.gov.et/pay/xyz123',
+                            expiresAt: '2026-03-04T10:30:00Z',
+                            methods: ['telebirr', 'cbe', 'awash_bank']
+                        }
+                    },
+                    {
+                        step: 16,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/payments/execute',
+                        request: {
+                            paymentId: 'pay-2026-xyz123',
+                            paymentMethod: 'telebirr',
+                            phoneNumber: '+251911234567'
+                        },
+                        processing: 'Payment Gateway initiates Telebirr payment, user receives push notification on phone to confirm',
+                        condition: 'User selects payment method and confirms',
+                        timing: '1-5 seconds',
+                        response: {
+                            transactionId: 'txn-telebirr-789',
+                            status: 'pending',
+                            message: 'Please confirm payment on your phone'
+                        }
+                    },
+                    {
+                        step: 17,
+                        from: { name: 'Telebirr/CBE', icon: '🏦', color: 'emerald' },
+                        to: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        protocol: 'HTTP/REST (Callback)',
+                        method: 'POST',
+                        endpoint: '/callbacks/telebirr',
+                        payload: {
+                            transactionId: 'txn-telebirr-789',
+                            status: 'SUCCESS',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            paymentMethod: 'telebirr',
+                            paidAt: '2026-03-03T10:35:00Z',
+                            phoneNumber: '+251911234567'
+                        },
+                        processing: 'Payment Gateway receives confirmation, verifies signature, updates payment status, reconciles transaction',
+                        condition: 'User confirms payment on Telebirr app',
+                        timing: 'Varies (user action dependent)'
+                    },
+                    {
+                        step: 18,
+                        from: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        to: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        protocol: 'Kafka/Event',
+                        topic: 'payment.events',
+                        eventType: 'PaymentCompleted',
+                        payload: {
+                            eventType: 'PaymentCompleted',
+                            eventId: 'evt-pay-123',
+                            timestamp: '2026-03-03T10:35:05Z',
+                            data: {
+                                paymentId: 'pay-2026-xyz123',
+                                applicationId: 'ET-2026-00123',
+                                transactionId: 'txn-telebirr-789',
+                                amount: 500.00,
+                                currency: 'ETB',
+                                status: 'completed'
+                            }
+                        },
+                        processing: 'Event published to Kafka for all interested consumers (orchestration, notification, audit)',
+                        condition: 'Payment confirmed by provider',
+                        timing: '< 10ms'
+                    },
+                    {
+                        step: 19,
+                        from: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        to: { name: 'Ministry Adapter', icon: '🔗', color: 'orange' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: 'https://api.trade.gov.et/v1/applications/MOT-2026-5678/finalize',
+                        request: {
+                            externalId: 'ET-2026-00123',
+                            paymentConfirmed: true,
+                            paymentReference: 'REF-ABC123',
+                            transactionId: 'txn-telebirr-789',
+                            amount: 500.00,
+                            paidAt: '2026-03-03T10:35:00Z'
+                        },
+                        processing: 'Ministry verifies payment confirmation, generates license number, creates digital certificate',
+                        condition: 'PaymentCompleted event received and processed',
+                        timing: '1-3 seconds',
+                        response: {
+                            status: 'APPROVED',
+                            licenseNumber: 'BL-2026-00123',
+                            issuedDate: '2026-03-03T10:36:00Z',
+                            expiryDate: '2027-03-03T00:00:00Z',
+                            certificateGenerated: true
+                        }
+                    },
+                    {
+                        step: 20,
+                        from: { name: 'Ministry of Trade', icon: '🏛️', color: 'orange' },
+                        to: { name: 'Document Service', icon: '📄', color: 'cyan' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/documents/store',
+                        headers: {
+                            'Authorization': 'Bearer service-token',
+                            'Content-Type': 'application/pdf'
+                        },
+                        request: {
+                            documentType: 'business_license',
+                            applicationId: 'ET-2026-00123',
+                            licenseNumber: 'BL-2026-00123',
+                            metadata: {
+                                businessName: 'ABC Trading PLC',
+                                issuedBy: 'Ministry of Trade',
+                                issuedDate: '2026-03-03T10:36:00Z',
+                                expiryDate: '2027-03-03T00:00:00Z'
+                            },
+                            fileData: 'base64-encoded-pdf-data',
+                            digitalSignature: 'ministry-signature-data'
+                        },
+                        processing: 'Document Service stores PDF in object storage (S3), generates secure download URL, records metadata in database',
+                        condition: 'License certificate generated and digitally signed',
+                        timing: '500-1000ms',
+                        response: {
+                            documentId: 'doc-2026-abc123',
+                            downloadUrl: 'https://docs.nuegp.gov.et/secure/doc-2026-abc123',
+                            expiresAt: '2026-03-10T10:36:00Z',
+                            fileSize: 245680,
+                            hash: 'sha256-document-hash'
+                        }
+                    },
+                    {
+                        step: 21,
+                        from: { name: 'Document Service', icon: '📄', color: 'cyan' },
+                        to: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        protocol: 'Kafka/Event',
+                        topic: 'document.events',
+                        eventType: 'DocumentReady',
+                        payload: {
+                            eventType: 'DocumentReady',
+                            eventId: 'evt-doc-123',
+                            timestamp: '2026-03-03T10:36:30Z',
+                            data: {
+                                documentId: 'doc-2026-abc123',
+                                documentType: 'business_license',
+                                applicationId: 'ET-2026-00123',
+                                userId: 'usr-123456',
+                                downloadUrl: 'https://docs.nuegp.gov.et/secure/doc-2026-abc123'
+                            }
+                        },
+                        processing: 'Event published to notify all subscribers that document is ready for download',
+                        condition: 'Document successfully stored',
+                        timing: '< 10ms'
+                    },
+                    {
+                        step: 22,
+                        from: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        to: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        protocol: 'Kafka/Subscribe',
+                        processing: 'Notification Service consumes DocumentReady event, prepares notification with download link',
+                        condition: 'DocumentReady event in topic',
+                        timing: '50-100ms',
+                        action: {
+                            type: 'SEND_NOTIFICATION',
+                            channels: ['SMS', 'EMAIL'],
+                            template: 'document-ready',
+                            variables: {
+                                documentType: 'Business License',
+                                licenseNumber: 'BL-2026-00123',
+                                downloadUrl: 'https://portal.nuegp.gov.et/documents/doc-2026-abc123'
+                            }
+                        }
+                    },
+                    {
+                        step: 23,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'Client (SMS & Email)', icon: '📱', color: 'blue' },
+                        protocol: 'SMS + Email',
+                        sms: 'Your Business License BL-2026-00123 is ready! Download now at portal.nuegp.gov.et',
+                        email: {
+                            subject: 'Your Business License is Ready',
+                            body: 'Dear John Doe, your Business License (BL-2026-00123) has been issued and is ready for download...',
+                            attachments: []
+                        },
+                        processing: 'Multi-channel notification sent via SMS (Twilio) and Email (SMTP)',
+                        condition: 'User has valid contact information',
+                        timing: '1-3 seconds'
+                    },
+                    {
+                        step: 24,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Document Service', icon: '📄', color: 'cyan' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: '/api/documents/doc-2026-abc123/download',
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGci...',
+                            'Accept': 'application/pdf'
+                        },
+                        processing: 'Document Service verifies JWT token, checks user authorization, retrieves PDF from S3, streams to client',
+                        condition: 'User clicks download button, valid authentication',
+                        timing: '500-2000ms',
+                        response: {
+                            contentType: 'application/pdf',
+                            contentLength: 245680,
+                            fileName: 'Business_License_BL-2026-00123.pdf',
+                            headers: {
+                                'Content-Disposition': 'attachment; filename="Business_License_BL-2026-00123.pdf"',
+                                'X-Document-ID': 'doc-2026-abc123',
+                                'X-Digital-Signature': 'verified'
+                            }
+                        }
+                    }
+                ]
+            },
+            'authentication': {
+                title: 'Authentication Flow - SSO with JWT',
+                description: 'Detailed authentication process with token management',
+                steps: [
+                    {
+                        step: 1,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: '/api/auth/sso/initiate',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'User-Agent': 'Mesob-Portal/1.0'
+                        },
+                        request: {
+                            returnUrl: 'https://portal.nuegp.gov.et/dashboard',
+                            clientId: 'mesob-portal-client-id'
+                        },
+                        processing: 'API Gateway generates SSO session, creates state token for CSRF protection',
+                        condition: 'User clicks "Login with Fayda" button',
+                        timing: '< 50ms',
+                        response: {
+                            redirectUrl: 'https://sso.fayda.gov.et/authorize?client_id=xxx&state=yyy',
+                            state: 'csrf-protection-token-12345',
+                            expiresIn: 300
+                        }
+                    },
+                    {
+                        step: 2,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Fayda SSO', icon: '🔐', color: 'green' },
+                        protocol: 'HTTP/Redirect',
+                        method: 'GET',
+                        endpoint: '/authorize',
+                        parameters: {
+                            response_type: 'code',
+                            client_id: 'mesob-portal-client-id',
+                            redirect_uri: 'https://api.nuegp.gov.et/auth/callback',
+                            scope: 'openid profile email',
+                            state: 'csrf-protection-token-12345'
+                        },
+                        processing: 'Browser redirects to Fayda SSO portal, user sees login page',
+                        condition: 'SSO initiation successful',
+                        timing: 'Browser redirect'
+                    },
+                    {
+                        step: 3,
+                        from: { name: 'User', icon: '👤', color: 'blue' },
+                        to: { name: 'Fayda SSO', icon: '🔐', color: 'green' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/authenticate',
+                        request: {
+                            nationalId: 'ET-12345678',
+                            biometric: 'fingerprint-data-base64',
+                            // OR
+                            username: 'john.doe',
+                            password: '********'
+                        },
+                        processing: 'Fayda verifies National ID and biometric data against government database',
+                        condition: 'User provides National ID and biometric authentication',
+                        timing: '500-2000ms',
+                        response: {
+                            authenticated: true,
+                            authorizationCode: 'auth-code-xyz123',
+                            state: 'csrf-protection-token-12345'
+                        }
+                    },
+                    {
+                        step: 4,
+                        from: { name: 'Fayda SSO', icon: '🔐', color: 'green' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/Redirect',
+                        method: 'GET',
+                        endpoint: '/auth/callback',
+                        parameters: {
+                            code: 'auth-code-xyz123',
+                            state: 'csrf-protection-token-12345'
+                        },
+                        processing: 'Browser redirects back to NUEGP with authorization code',
+                        condition: 'Authentication successful at Fayda',
+                        timing: 'Browser redirect'
+                    },
+                    {
+                        step: 5,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Fayda SSO', icon: '🔐', color: 'green' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/token',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Authorization': 'Basic base64(client_id:client_secret)'
+                        },
+                        request: {
+                            grant_type: 'authorization_code',
+                            code: 'auth-code-xyz123',
+                            redirect_uri: 'https://api.nuegp.gov.et/auth/callback'
+                        },
+                        processing: 'API Gateway exchanges authorization code for access token (OAuth2 flow)',
+                        condition: 'Valid authorization code received',
+                        timing: '100-300ms',
+                        response: {
+                            access_token: 'fayda-access-token-abc',
+                            token_type: 'Bearer',
+                            expires_in: 3600,
+                            refresh_token: 'fayda-refresh-token-xyz',
+                            id_token: 'jwt-id-token-with-user-info'
+                        }
+                    },
+                    {
+                        step: 6,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Fayda SSO', icon: '🔐', color: 'green' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: '/userinfo',
+                        headers: {
+                            'Authorization': 'Bearer fayda-access-token-abc'
+                        },
+                        processing: 'API Gateway retrieves user profile information from Fayda',
+                        condition: 'Valid access token',
+                        timing: '100-200ms',
+                        response: {
+                            sub: 'fayda-user-id-123',
+                            nationalId: 'ET-12345678',
+                            name: 'John Doe',
+                            given_name: 'John',
+                            family_name: 'Doe',
+                            email: 'john.doe@example.com',
+                            phone: '+251911234567',
+                            birthdate: '1990-01-15',
+                            verified: true
+                        }
+                    },
+                    {
+                        step: 7,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Authentication Service', icon: '🔐', color: 'green' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/internal/auth/create-session',
+                        request: {
+                            faydaUserId: 'fayda-user-id-123',
+                            nationalId: 'ET-12345678',
+                            userInfo: {
+                                name: 'John Doe',
+                                email: 'john.doe@example.com',
+                                phone: '+251911234567'
+                            },
+                            sessionMetadata: {
+                                ipAddress: '192.168.1.100',
+                                userAgent: 'Mesob-Portal/1.0',
+                                authMethod: 'fayda_sso'
+                            }
+                        },
+                        processing: 'Authentication Service creates/updates user in local database, generates NUEGP JWT token',
+                        condition: 'User info retrieved from Fayda',
+                        timing: '100-200ms',
+                        response: {
+                            userId: 'usr-123456',
+                            jwt_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3ItMTIzNDU2IiwibmF0aW9uYWxJZCI6IkVULTEyMzQ1Njc4Iiwicm9sZXMiOlsiY2l0aXplbiJdLCJpYXQiOjE3MDk0NjYwMDAsImV4cCI6MTcwOTQ2OTYwMH0.signature',
+                            refresh_token: 'refresh-token-nuegp-xyz',
+                            expiresIn: 3600
+                        }
+                    },
+                    {
+                        step: 8,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        protocol: 'HTTP/Redirect',
+                        method: '302 Found',
+                        endpoint: '/dashboard',
+                        headers: {
+                            'Set-Cookie': 'session_token=jwt-token; Secure; HttpOnly; SameSite=Strict',
+                            'Location': '/dashboard'
+                        },
+                        processing: 'Browser sets secure cookie with JWT token, redirects to dashboard',
+                        condition: 'Session created successfully',
+                        timing: 'Browser redirect'
+                    },
+                    {
+                        step: 9,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: '/api/user/profile',
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGci...',
+                            'Cookie': 'session_token=jwt-token'
+                        },
+                        processing: 'All subsequent requests include JWT token for authentication',
+                        condition: 'User authenticated, accessing protected resources',
+                        timing: '< 50ms',
+                        response: {
+                            userId: 'usr-123456',
+                            name: 'John Doe',
+                            email: 'john.doe@example.com',
+                            nationalId: 'ET-12345678',
+                            roles: ['citizen'],
+                            permissions: ['apply_services', 'view_applications']
+                        }
+                    }
+                ]
+            },
+            'validation': {
+                title: 'Real-time Validation Flow',
+                description: 'Field validation with external registry checks',
+                steps: [
+                    {
+                        step: 1,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/validate/business-name',
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGci...',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            field: 'businessName',
+                            value: 'ABC Trading PLC',
+                            context: {
+                                businessType: 'PLC',
+                                region: 'Addis Ababa',
+                                sector: 'Import/Export'
+                            }
+                        },
+                        processing: 'API Gateway validates request format, checks rate limits (10 validations/min per user)',
+                        condition: 'User types business name and field loses focus (onBlur event)',
+                        timing: '< 50ms'
+                    },
+                    {
+                        step: 2,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/internal/validate',
+                        request: {
+                            validationType: 'business_name_availability',
+                            data: {
+                                name: 'ABC Trading PLC',
+                                type: 'PLC',
+                                region: 'Addis Ababa',
+                                sector: 'Import/Export'
+                            },
+                            rules: [
+                                'uniqueness',
+                                'naming_convention',
+                                'prohibited_words'
+                            ]
+                        },
+                        processing: 'Validation Service applies business rules: name length (3-100 chars), format validation, prohibited words check',
+                        condition: 'Request passed API Gateway checks',
+                        timing: '50-100ms'
+                    },
+                    {
+                        step: 3,
+                        from: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        to: { name: 'Validation Cache', icon: '💾', color: 'gray' },
+                        protocol: 'Redis/Cache',
+                        operation: 'GET',
+                        key: 'validation:business_name:ABC_Trading_PLC',
+                        processing: 'Check if this exact name was validated recently (cache TTL: 5 minutes)',
+                        condition: 'Before making external API call',
+                        timing: '< 10ms',
+                        cacheResult: 'MISS (not found in cache)'
+                    },
+                    {
+                        step: 4,
+                        from: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        to: { name: 'Ministry of Trade API', icon: '🏛️', color: 'orange' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: 'https://api.trade.gov.et/v1/registry/check-name',
+                        headers: {
+                            'X-API-Key': 'validation-api-key-secret',
+                            'Content-Type': 'application/json',
+                            'X-Request-ID': 'req-validation-123'
+                        },
+                        request: {
+                            name: 'ABC Trading PLC',
+                            type: 'PLC',
+                            region: 'Addis Ababa',
+                            checkType: 'exact_and_similar'
+                        },
+                        processing: 'Ministry database performs: 1) Exact match search, 2) Phonetic matching (Soundex), 3) Fuzzy matching (Levenshtein distance < 2)',
+                        condition: 'Cache miss, external validation needed',
+                        timing: '200-800ms',
+                        response: {
+                            available: true,
+                            exactMatch: false,
+                            similarNames: [
+                                {
+                                    name: 'ABC Import Export',
+                                    similarity: 0.75,
+                                    licenseNumber: 'BL-2020-12345',
+                                    status: 'active'
+                                },
+                                {
+                                    name: 'AB Trading PLC',
+                                    similarity: 0.85,
+                                    licenseNumber: 'BL-2021-67890',
+                                    status: 'active'
+                                }
+                            ],
+                            recommendedAlternatives: [
+                                'ABC Trading and Consulting PLC',
+                                'ABC International Trading PLC'
+                            ]
+                        }
+                    },
+                    {
+                        step: 5,
+                        from: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        to: { name: 'Ministry of Revenue API', icon: '💰', color: 'amber' },
+                        protocol: 'HTTP/REST',
+                        method: 'GET',
+                        endpoint: 'https://api.revenue.gov.et/v1/validate/tin',
+                        headers: {
+                            'X-API-Key': 'validation-api-key-tin',
+                            'X-Request-ID': 'req-validation-123'
+                        },
+                        parameters: {
+                            tin: '0123456789'
+                        },
+                        processing: 'Revenue Ministry validates TIN format (10 digits), checks if TIN exists and is active',
+                        condition: 'If TIN field is provided in form',
+                        timing: '150-400ms',
+                        response: {
+                            valid: true,
+                            tinNumber: '0123456789',
+                            status: 'active',
+                            registeredName: 'John Doe',
+                            registrationType: 'individual',
+                            registeredDate: '2020-05-15'
+                        }
+                    },
+                    {
+                        step: 6,
+                        from: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        to: { name: 'Validation Cache', icon: '💾', color: 'gray' },
+                        protocol: 'Redis/Cache',
+                        operation: 'SET',
+                        key: 'validation:business_name:ABC_Trading_PLC',
+                        value: {
+                            available: true,
+                            similarNames: ['...'],
+                            validatedAt: '2026-03-03T10:25:00Z'
+                        },
+                        ttl: 300,
+                        processing: 'Cache validation result for 5 minutes to reduce external API calls',
+                        condition: 'External validation completed',
+                        timing: '< 10ms'
+                    },
+                    {
+                        step: 7,
+                        from: { name: 'Validation Service', icon: '✅', color: 'red' },
+                        to: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        protocol: 'HTTP/REST',
+                        statusCode: '200 OK',
+                        response: {
+                            valid: true,
+                            fieldName: 'businessName',
+                            value: 'ABC Trading PLC',
+                            checks: {
+                                format: {
+                                    passed: true,
+                                    message: 'Name format is valid'
+                                },
+                                uniqueness: {
+                                    passed: true,
+                                    message: 'Name is available',
+                                    warnings: [
+                                        'Similar business names exist: ABC Import Export, AB Trading PLC'
+                                    ]
+                                },
+                                tin: {
+                                    passed: true,
+                                    message: 'TIN is valid and active'
+                                }
+                            },
+                            recommendations: [
+                                'ABC Trading and Consulting PLC',
+                                'ABC International Trading PLC'
+                            ],
+                            processingTime: 650
+                        },
+                        processing: 'Validation Service aggregates all check results, generates user-friendly messages',
+                        condition: 'All validations completed',
+                        timing: '50-100ms'
+                    },
+                    {
+                        step: 8,
+                        from: { name: 'API Gateway', icon: '🚪', color: 'purple' },
+                        to: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        protocol: 'HTTP/REST',
+                        statusCode: '200 OK',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Validation-Time': '750ms'
+                        },
+                        processing: 'Client receives validation result, updates UI with visual feedback',
+                        condition: 'Response returned to client',
+                        timing: 'Total: ~800ms',
+                        uiUpdate: {
+                            icon: '✅ Green checkmark',
+                            message: 'Business name is available',
+                            warnings: [
+                                'ℹ️ Similar names exist: ABC Import Export, AB Trading PLC'
+                            ],
+                            suggestions: [
+                                'ABC Trading and Consulting PLC',
+                                'ABC International Trading PLC'
+                            ]
+                        }
+                    }
+                ]
+            },
+            'payment': {
+                title: 'Payment Processing Flow',
+                description: 'Payment collection with Telebirr/CBE integration',
+                steps: [
+                    {
+                        step: 1,
+                        from: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        to: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/payments/create',
+                        headers: {
+                            'X-Service-Auth': 'internal-service-token',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            applicationId: 'ET-2026-00123',
+                            userId: 'usr-123456',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            purpose: 'Business License Fee',
+                            metadata: {
+                                serviceType: 'business_license',
+                                licenseNumber: 'BL-2026-00123',
+                                ministryCode: 'MOT'
+                            },
+                            callbackUrl: 'https://api.nuegp.gov.et/callbacks/payment',
+                            expiresIn: 86400
+                        },
+                        processing: 'Payment Gateway generates unique payment reference, creates payment record in database',
+                        condition: 'Ministry approval received, payment required to proceed',
+                        timing: '50-100ms',
+                        response: {
+                            paymentId: 'pay-2026-xyz123',
+                            paymentReference: 'NUEGP-REF-ABC123',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            status: 'pending',
+                            createdAt: '2026-03-03T10:30:00Z',
+                            expiresAt: '2026-03-04T10:30:00Z'
+                        }
+                    },
+                    {
+                        step: 2,
+                        from: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        to: { name: 'QR Code Generator', icon: '📱', color: 'emerald' },
+                        protocol: 'Internal',
+                        processing: 'Generate QR code containing payment reference, amount, and merchant info',
+                        condition: 'Payment created',
+                        timing: '< 50ms',
+                        qrData: {
+                            merchantId: 'NUEGP-MERCHANT-001',
+                            merchantName: 'National Unified E-Government Platform',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            reference: 'NUEGP-REF-ABC123',
+                            description: 'Business License Fee'
+                        },
+                        response: {
+                            qrCodeBase64: 'data:image/png;base64,iVBORw0KGgoAAAANSUh...',
+                            qrCodeUrl: 'https://cdn.nuegp.gov.et/qr/pay-2026-xyz123.png'
+                        }
+                    },
+                    {
+                        step: 3,
+                        from: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        to: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        protocol: 'HTTP/REST',
+                        statusCode: '200 OK',
+                        response: {
+                            paymentId: 'pay-2026-xyz123',
+                            paymentReference: 'NUEGP-REF-ABC123',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            qrCode: 'data:image/png;base64,...',
+                            paymentUrl: 'https://payment.nuegp.gov.et/pay/xyz123',
+                            availableMethods: [
+                                {
+                                    method: 'telebirr',
+                                    name: 'Telebirr Mobile Payment',
+                                    icon: 'telebirr-logo.png',
+                                    supported: true
+                                },
+                                {
+                                    method: 'cbe',
+                                    name: 'Commercial Bank of Ethiopia',
+                                    icon: 'cbe-logo.png',
+                                    supported: true
+                                },
+                                {
+                                    method: 'awash_bank',
+                                    name: 'Awash Bank',
+                                    icon: 'awash-logo.png',
+                                    supported: true
+                                }
+                            ],
+                            expiresAt: '2026-03-04T10:30:00Z',
+                            expiresIn: 86400
+                        },
+                        processing: 'Client displays payment page with QR code and payment method options',
+                        condition: 'Payment request created',
+                        timing: '100-200ms'
+                    },
+                    {
+                        step: 4,
+                        from: { name: 'Client Portal', icon: '👤', color: 'blue' },
+                        to: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: '/api/payments/pay-2026-xyz123/execute',
+                        request: {
+                            paymentMethod: 'telebirr',
+                            phoneNumber: '+251911234567'
+                        },
+                        processing: 'User selects Telebirr as payment method and enters phone number',
+                        condition: 'User clicks "Pay with Telebirr" button',
+                        timing: '< 50ms'
+                    },
+                    {
+                        step: 5,
+                        from: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        to: { name: 'Telebirr API', icon: '🏦', color: 'emerald' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: 'https://api.telebirr.et/v1/payments/initiate',
+                        headers: {
+                            'Authorization': 'Bearer telebirr-api-token',
+                            'X-Merchant-ID': 'NUEGP-MERCHANT-001',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            merchantId: 'NUEGP-MERCHANT-001',
+                            merchantReference: 'NUEGP-REF-ABC123',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            customerPhone: '+251911234567',
+                            description: 'Business License Fee - ET-2026-00123',
+                            callbackUrl: 'https://api.nuegp.gov.et/callbacks/telebirr',
+                            returnUrl: 'https://portal.nuegp.gov.et/payment/result'
+                        },
+                        processing: 'Payment Gateway calls Telebirr API to initiate payment request',
+                        condition: 'User confirmed payment with Telebirr',
+                        timing: '500-1500ms',
+                        response: {
+                            success: true,
+                            transactionId: 'TXN-TELEBIRR-789456',
+                            status: 'pending',
+                            message: 'Payment request sent to customer',
+                            pollUrl: 'https://api.telebirr.et/v1/payments/TXN-TELEBIRR-789456/status'
+                        }
+                    },
+                    {
+                        step: 6,
+                        from: { name: 'Telebirr', icon: '🏦', color: 'emerald' },
+                        to: { name: 'User Phone', icon: '📱', color: 'blue' },
+                        protocol: 'Push Notification',
+                        notification: {
+                            title: 'Payment Request',
+                            message: 'NUEGP requests 500.00 ETB for Business License Fee',
+                            actions: ['Approve', 'Decline']
+                        },
+                        processing: 'Telebirr sends push notification to user phone app',
+                        condition: 'Payment initiated successfully',
+                        timing: '1-5 seconds'
+                    },
+                    {
+                        step: 7,
+                        from: { name: 'User', icon: '👤', color: 'blue' },
+                        to: { name: 'Telebirr App', icon: '📱', color: 'emerald' },
+                        protocol: 'Mobile App',
+                        action: 'User enters PIN and approves payment in Telebirr app',
+                        processing: 'Telebirr validates PIN, checks account balance (≥ 500 ETB), processes debit',
+                        condition: 'User receives notification and opens Telebirr app',
+                        timing: 'User-dependent (typically 10-60 seconds)'
+                    },
+                    {
+                        step: 8,
+                        from: { name: 'Telebirr App', icon: '📱', color: 'emerald' },
+                        to: { name: 'Telebirr Backend', icon: '🏦', color: 'emerald' },
+                        protocol: 'Internal',
+                        processing: 'Telebirr backend processes payment: debit user account, credit merchant account, generate receipt',
+                        condition: 'User approved payment with correct PIN',
+                        timing: '500-2000ms',
+                        transaction: {
+                            from: 'User Account +251911234567',
+                            to: 'NUEGP Merchant Account',
+                            amount: 500.00,
+                            fee: 2.50,
+                            totalDebited: 502.50,
+                            transactionId: 'TXN-TELEBIRR-789456',
+                            timestamp: '2026-03-03T10:35:00Z'
+                        }
+                    },
+                    {
+                        step: 9,
+                        from: { name: 'Telebirr Backend', icon: '🏦', color: 'emerald' },
+                        to: { name: 'Payment Gateway (Callback)', icon: '💳', color: 'emerald' },
+                        protocol: 'HTTP/REST (Webhook)',
+                        method: 'POST',
+                        endpoint: 'https://api.nuegp.gov.et/callbacks/telebirr',
+                        headers: {
+                            'X-Telebirr-Signature': 'hmac-sha256-signature-here',
+                            'Content-Type': 'application/json'
+                        },
+                        payload: {
+                            eventType: 'PAYMENT_SUCCESS',
+                            transactionId: 'TXN-TELEBIRR-789456',
+                            merchantReference: 'NUEGP-REF-ABC123',
+                            amount: 500.00,
+                            currency: 'ETB',
+                            fee: 2.50,
+                            netAmount: 497.50,
+                            customerPhone: '+251911234567',
+                            status: 'SUCCESS',
+                            timestamp: '2026-03-03T10:35:05Z',
+                            receiptNumber: 'RCPT-789456'
+                        },
+                        processing: 'Payment Gateway receives callback, verifies HMAC signature to ensure authenticity',
+                        condition: 'Payment processed successfully by Telebirr',
+                        timing: '100-500ms'
+                    },
+                    {
+                        step: 10,
+                        from: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        to: { name: 'Payment Database', icon: '💾', color: 'gray' },
+                        protocol: 'Database Update',
+                        operation: 'UPDATE payments SET status = completed',
+                        data: {
+                            paymentId: 'pay-2026-xyz123',
+                            status: 'completed',
+                            transactionId: 'TXN-TELEBIRR-789456',
+                            paymentMethod: 'telebirr',
+                            paidAmount: 500.00,
+                            fee: 2.50,
+                            receiptNumber: 'RCPT-789456',
+                            completedAt: '2026-03-03T10:35:05Z'
+                        },
+                        processing: 'Update payment record in database, store receipt information',
+                        condition: 'Webhook signature verified',
+                        timing: '< 50ms'
+                    },
+                    {
+                        step: 11,
+                        from: { name: 'Payment Gateway', icon: '💳', color: 'emerald' },
+                        to: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        protocol: 'Kafka/Event',
+                        topic: 'payment.events',
+                        eventType: 'PaymentCompleted',
+                        payload: {
+                            eventType: 'PaymentCompleted',
+                            eventId: 'evt-payment-123',
+                            timestamp: '2026-03-03T10:35:07Z',
+                            data: {
+                                paymentId: 'pay-2026-xyz123',
+                                applicationId: 'ET-2026-00123',
+                                userId: 'usr-123456',
+                                amount: 500.00,
+                                currency: 'ETB',
+                                method: 'telebirr',
+                                transactionId: 'TXN-TELEBIRR-789456',
+                                receiptNumber: 'RCPT-789456'
+                            }
+                        },
+                        processing: 'Publish PaymentCompleted event for all interested services (orchestration, notification, audit)',
+                        condition: 'Payment record updated successfully',
+                        timing: '< 10ms'
+                    },
+                    {
+                        step: 12,
+                        from: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        to: { name: 'Orchestration Engine', icon: '⚙️', color: 'pink' },
+                        protocol: 'Kafka/Subscribe',
+                        consumerGroup: 'orchestration-service-group',
+                        processing: 'Orchestration Engine consumes PaymentCompleted event, resumes workflow to next step',
+                        condition: 'Event published to Kafka topic',
+                        timing: '50-100ms',
+                        workflowAction: {
+                            workflowId: 'wf-2026-abc123',
+                            currentStep: 'payment_collection',
+                            action: 'COMPLETE_STEP',
+                            nextStep: 'final_approval',
+                            variables: {
+                                paymentConfirmed: true,
+                                paymentId: 'pay-2026-xyz123',
+                                transactionId: 'TXN-TELEBIRR-789456'
+                            }
+                        }
+                    },
+                    {
+                        step: 13,
+                        from: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        to: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        protocol: 'Kafka/Subscribe',
+                        consumerGroup: 'notification-service-group',
+                        processing: 'Notification Service consumes event, prepares payment confirmation notification',
+                        condition: 'Event published to Kafka topic',
+                        timing: '50-100ms',
+                        notificationAction: {
+                            template: 'payment-confirmed',
+                            channels: ['SMS', 'EMAIL'],
+                            variables: {
+                                amount: '500.00 ETB',
+                                receiptNumber: 'RCPT-789456',
+                                serviceName: 'Business License'
+                            }
+                        }
+                    },
+                    {
+                        step: 14,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'Client (SMS)', icon: '📱', color: 'blue' },
+                        protocol: 'SMS',
+                        message: 'Payment confirmed! 500.00 ETB received for Business License. Receipt: RCPT-789456. Your application is being processed.',
+                        processing: 'Send SMS confirmation to user',
+                        condition: 'User has valid phone number',
+                        timing: '1-3 seconds'
+                    }
+                ]
+            },
+            'notification': {
+                title: 'Multi-Channel Notification Flow',
+                description: 'Event-driven notification delivery via SMS and Email',
+                steps: [
+                    {
+                        step: 1,
+                        from: { name: 'Ministry Adapter', icon: '🔗', color: 'orange' },
+                        to: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        protocol: 'Kafka/Event',
+                        topic: 'application.events',
+                        eventType: 'ApplicationStatusChanged',
+                        payload: {
+                            eventType: 'ApplicationStatusChanged',
+                            eventId: 'evt-status-456',
+                            timestamp: '2026-03-03T14:30:00Z',
+                            data: {
+                                applicationId: 'ET-2026-00123',
+                                userId: 'usr-123456',
+                                previousStatus: 'under_review',
+                                newStatus: 'approved',
+                                updatedBy: 'ministry-officer-123',
+                                comments: 'Application approved. Ready for license issuance.',
+                                metadata: {
+                                    ministryCode: 'MOT',
+                                    reviewDuration: 172800,
+                                    nextAction: 'license_generation'
+                                }
+                            }
+                        },
+                        processing: 'Ministry publishes status change event after officer approval',
+                        condition: 'Ministry officer updates application status',
+                        timing: '< 10ms'
+                    },
+                    {
+                        step: 2,
+                        from: { name: 'Event Bus', icon: '📡', color: 'violet' },
+                        to: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        protocol: 'Kafka/Subscribe',
+                        consumerGroup: 'notification-service-group',
+                        offset: 'latest',
+                        processing: 'Notification Service consumes event from Kafka, checks event type and user notification preferences',
+                        condition: 'ApplicationStatusChanged event published',
+                        timing: '50-100ms'
+                    },
+                    {
+                        step: 3,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'User Preferences DB', icon: '💾', color: 'gray' },
+                        protocol: 'Database Query',
+                        query: 'SELECT notification_channels, language FROM user_preferences WHERE user_id = usr-123456',
+                        processing: 'Retrieve user notification preferences and preferred language',
+                        condition: 'Need to check how user wants to be notified',
+                        timing: '10-30ms',
+                        response: {
+                            userId: 'usr-123456',
+                            channels: ['SMS', 'EMAIL', 'PUSH'],
+                            language: 'en',
+                            smsNumber: '+251911234567',
+                            email: 'john.doe@example.com',
+                            pushTokens: ['fcm-token-abc123']
+                        }
+                    },
+                    {
+                        step: 4,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'Template Engine', icon: '📝', color: 'teal' },
+                        protocol: 'Internal',
+                        template: 'application-status-changed',
+                        variables: {
+                            userName: 'John Doe',
+                            applicationId: 'ET-2026-00123',
+                            oldStatus: 'Under Review',
+                            newStatus: 'Approved',
+                            comments: 'Application approved. Ready for license issuance.',
+                            nextSteps: 'Your license is being generated and will be ready for download soon.'
+                        },
+                        processing: 'Template engine loads template, replaces variables, generates content in user language',
+                        condition: 'User preferences retrieved',
+                        timing: '20-50ms',
+                        outputs: {
+                            sms: 'Good news! Your Business License application ET-2026-00123 has been APPROVED. Your license will be ready soon. Check portal for updates.',
+                            email: {
+                                subject: 'Application Approved - ET-2026-00123',
+                                body: 'Dear John Doe,\\n\\nWe are pleased to inform you that your Business License application (ET-2026-00123) has been approved...\\n\\nNext Steps:\\n- Your license is being generated\\n- You will receive a notification when ready for download\\n\\nThank you,\\nNUEGP Team',
+                                html: '<html>...</html>'
+                            },
+                            push: {
+                                title: 'Application Approved',
+                                body: 'Your Business License ET-2026-00123 has been approved!',
+                                icon: 'success-icon.png',
+                                action: 'VIEW_APPLICATION'
+                            }
+                        }
+                    },
+                    {
+                        step: 5,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'SMS Provider (Twilio)', icon: '📱', color: 'blue' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: 'https://api.twilio.com/2010-04-01/Accounts/ACXXXXX/Messages.json',
+                        headers: {
+                            'Authorization': 'Basic base64(account_sid:auth_token)',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        request: {
+                            From: '+251123456789',
+                            To: '+251911234567',
+                            Body: 'Good news! Your Business License application ET-2026-00123 has been APPROVED. Your license will be ready soon. Check portal for updates.',
+                            StatusCallback: 'https://api.nuegp.gov.et/callbacks/sms-delivery'
+                        },
+                        processing: 'Twilio receives SMS request, validates account, queues message for delivery',
+                        condition: 'SMS enabled in user preferences',
+                        timing: '200-800ms',
+                        response: {
+                            sid: 'SM-twilio-message-abc123',
+                            status: 'queued',
+                            to: '+251911234567',
+                            from: '+251123456789',
+                            dateCreated: '2026-03-03T14:30:15Z',
+                            priceUnit: 'USD',
+                            price: '0.0075'
+                        }
+                    },
+                    {
+                        step: 6,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'Email Server (SMTP)', icon: '📧', color: 'blue' },
+                        protocol: 'SMTP',
+                        server: 'smtp.nuegp.gov.et:587',
+                        headers: {
+                            From: 'noreply@nuegp.gov.et',
+                            To: 'john.doe@example.com',
+                            Subject: 'Application Approved - ET-2026-00123',
+                            'Content-Type': 'text/html; charset=UTF-8',
+                            'Message-ID': '<msg-unique-id@nuegp.gov.et>'
+                        },
+                        body: '<html><body><h2>Application Approved</h2><p>Dear John Doe,</p><p>We are pleased to inform you that your Business License application (ET-2026-00123) has been approved...</p></body></html>',
+                        processing: 'SMTP server receives email, validates sender, queues for delivery',
+                        condition: 'Email enabled in user preferences',
+                        timing: '500-2000ms',
+                        response: {
+                            messageId: '<msg-unique-id@nuegp.gov.et>',
+                            status: 'sent',
+                            accepted: ['john.doe@example.com'],
+                            rejected: []
+                        }
+                    },
+                    {
+                        step: 7,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'FCM (Firebase)', icon: '📲', color: 'blue' },
+                        protocol: 'HTTP/REST',
+                        method: 'POST',
+                        endpoint: 'https://fcm.googleapis.com/v1/projects/nuegp-mobile/messages:send',
+                        headers: {
+                            'Authorization': 'Bearer fcm-server-key',
+                            'Content-Type': 'application/json'
+                        },
+                        request: {
+                            message: {
+                                token: 'fcm-token-abc123',
+                                notification: {
+                                    title: 'Application Approved',
+                                    body: 'Your Business License ET-2026-00123 has been approved!',
+                                    image: 'https://cdn.nuegp.gov.et/icons/success.png'
+                                },
+                                data: {
+                                    type: 'APPLICATION_STATUS',
+                                    applicationId: 'ET-2026-00123',
+                                    action: 'VIEW_APPLICATION',
+                                    deepLink: 'nuegp://applications/ET-2026-00123'
+                                },
+                                android: {
+                                    priority: 'high',
+                                    notification: {
+                                        sound: 'default',
+                                        clickAction: 'OPEN_APPLICATION'
+                                    }
+                                },
+                                apns: {
+                                    payload: {
+                                        aps: {
+                                            sound: 'default',
+                                            badge: 1
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        processing: 'FCM validates token, routes notification to user device via platform-specific channels',
+                        condition: 'Push notifications enabled, valid FCM token',
+                        timing: '100-500ms',
+                        response: {
+                            name: 'projects/nuegp-mobile/messages/msg-fcm-xyz789',
+                            messageId: 'msg-fcm-xyz789'
+                        }
+                    },
+                    {
+                        step: 8,
+                        from: { name: 'SMS Provider', icon: '📱', color: 'blue' },
+                        to: { name: 'User Phone', icon: '📱', color: 'blue' },
+                        protocol: 'SMS/GSM',
+                        message: 'Good news! Your Business License application ET-2026-00123 has been APPROVED. Your license will be ready soon. Check portal for updates.',
+                        processing: 'SMS delivered to user mobile phone via cellular network',
+                        condition: 'Valid phone number, phone is on',
+                        timing: '1-10 seconds'
+                    },
+                    {
+                        step: 9,
+                        from: { name: 'Email Server', icon: '📧', color: 'blue' },
+                        to: { name: 'User Email', icon: '📧', color: 'blue' },
+                        protocol: 'SMTP/Email',
+                        processing: 'Email delivered to user inbox',
+                        condition: 'Valid email address, inbox not full',
+                        timing: '1-30 seconds'
+                    },
+                    {
+                        step: 10,
+                        from: { name: 'FCM', icon: '📲', color: 'blue' },
+                        to: { name: 'User Mobile App', icon: '📱', color: 'blue' },
+                        protocol: 'Push Notification',
+                        processing: 'Push notification appears on user device',
+                        condition: 'App installed, notifications enabled, device online',
+                        timing: '1-5 seconds'
+                    },
+                    {
+                        step: 11,
+                        from: { name: 'Twilio', icon: '📱', color: 'blue' },
+                        to: { name: 'Notification Service (Callback)', icon: '🔔', color: 'teal' },
+                        protocol: 'HTTP/REST (Webhook)',
+                        method: 'POST',
+                        endpoint: 'https://api.nuegp.gov.et/callbacks/sms-delivery',
+                        payload: {
+                            MessageSid: 'SM-twilio-message-abc123',
+                            MessageStatus: 'delivered',
+                            To: '+251911234567',
+                            From: '+251123456789',
+                            EventType: 'delivered',
+                            ApiVersion: '2010-04-01'
+                        },
+                        processing: 'Notification Service receives delivery confirmation, updates notification status',
+                        condition: 'SMS successfully delivered to phone',
+                        timing: 'After SMS delivery'
+                    },
+                    {
+                        step: 12,
+                        from: { name: 'Notification Service', icon: '🔔', color: 'teal' },
+                        to: { name: 'Notification Log DB', icon: '💾', color: 'gray' },
+                        protocol: 'Database Insert',
+                        record: {
+                            notificationId: 'notif-2026-123456',
+                            eventId: 'evt-status-456',
+                            userId: 'usr-123456',
+                            applicationId: 'ET-2026-00123',
+                            type: 'application_status_changed',
+                            channels: {
+                                sms: {
+                                    status: 'delivered',
+                                    provider: 'twilio',
+                                    messageId: 'SM-twilio-message-abc123',
+                                    sentAt: '2026-03-03T14:30:15Z',
+                                    deliveredAt: '2026-03-03T14:30:20Z'
+                                },
+                                email: {
+                                    status: 'sent',
+                                    provider: 'smtp',
+                                    messageId: '<msg-unique-id@nuegp.gov.et>',
+                                    sentAt: '2026-03-03T14:30:16Z'
+                                },
+                                push: {
+                                    status: 'sent',
+                                    provider: 'fcm',
+                                    messageId: 'msg-fcm-xyz789',
+                                    sentAt: '2026-03-03T14:30:17Z'
+                                }
+                            },
+                            createdAt: '2026-03-03T14:30:10Z'
+                        },
+                        processing: 'Store notification delivery details for audit and analytics',
+                        condition: 'All channels processed',
+                        timing: '10-30ms'
+                    }
+                ]
+            }
+        };
+
+        function loadFlow(flowId) {
+            const flow = flows[flowId];
+            const container = document.getElementById('timelineContainer');
+            
+            container.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">${flow.title}</h2>
+                    <p class="text-gray-600 mb-4">${flow.description}</p>
+                    <div class="flex gap-4">
+                        <span class="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">${flow.steps.length} steps</span>
+                        <span class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">Detailed interaction flow</span>
+                    </div>
+                </div>
+            `;
+
+            flow.steps.forEach((step, index) => {
+                setTimeout(() => {
+                    const stepDiv = createStepElement(step, index);
+                    container.appendChild(stepDiv);
+                    setTimeout(() => stepDiv.classList.add('visible'), 50);
+                }, index * 200);
+            });
+        }
+
+        function createStepElement(step, index) {
+            const div = document.createElement('div');
+            div.className = 'timeline-item bg-white rounded-lg shadow-lg p-6 mb-6';
+            
+            let content = `
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                        ${step.step}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">${step.from.icon}</span>
+                            <span class="font-bold text-lg text-gray-900">${step.from.name}</span>
+                            <span class="text-2xl text-purple-500">→</span>
+                            <span class="text-2xl">${step.to.icon}</span>
+                            <span class="font-bold text-lg text-gray-900">${step.to.name}</span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap mb-3">
+                            <span class="protocol-badge">${step.protocol}</span>
+            `;
+            
+            if (step.method) {
+                const methodClass = step.method === 'GET' ? 'method-get' : 
+                                   step.method === 'POST' ? 'method-post' : 
+                                   step.method === 'PUT' ? 'method-put' : 'method-badge';
+                content += `<span class="method-badge ${methodClass}">${step.method}</span>`;
+            }
+            
+            if (step.statusCode) {
+                content += `<span class="method-badge status-200">${step.statusCode}</span>`;
+            }
+            
+            if (step.timing) {
+                content += `<span class="text-xs bg-gray-200 px-2 py-1 rounded">⏱️ ${step.timing}</span>`;
+            }
+            
+            content += `</div>`;
+            
+            if (step.endpoint) {
+                content += `<div class="mb-3"><code class="text-sm bg-gray-100 px-3 py-1 rounded">${step.endpoint}</code></div>`;
+            }
+            
+            if (step.condition) {
+                content += `
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-3 rounded">
+                        <div class="text-sm"><strong class="text-yellow-800">Condition:</strong> ${step.condition}</div>
+                    </div>
+                `;
+            }
+            
+            if (step.processing) {
+                content += `
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-3 rounded">
+                        <div class="text-sm"><strong class="text-blue-800">Processing:</strong> ${step.processing}</div>
+                    </div>
+                `;
+            }
+            
+            content += `</div></div>`;
+            
+            // Request/Response sections
+            if (step.request || step.response || step.headers || step.payload) {
+                content += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">`;
+                
+                if (step.headers) {
+                    content += `
+                        <div>
+                            <div class="font-semibold text-sm text-gray-700 mb-2">Headers</div>
+                            <div class="code-block">${JSON.stringify(step.headers, null, 2)}</div>
+                        </div>
+                    `;
+                }
+                
+                if (step.request) {
+                    content += `
+                        <div>
+                            <div class="font-semibold text-sm text-gray-700 mb-2">Request</div>
+                            <div class="code-block">${JSON.stringify(step.request, null, 2)}</div>
+                        </div>
+                    `;
+                }
+                
+                if (step.response) {
+                    content += `
+                        <div>
+                            <div class="font-semibold text-sm text-gray-700 mb-2">Response</div>
+                            <div class="code-block">${JSON.stringify(step.response, null, 2)}</div>
+                        </div>
+                    `;
+                }
+                
+                if (step.payload) {
+                    content += `
+                        <div>
+                            <div class="font-semibold text-sm text-gray-700 mb-2">Event Payload</div>
+                            <div class="code-block">${JSON.stringify(step.payload, null, 2)}</div>
+                        </div>
+                    `;
+                }
+                
+                content += `</div>`;
+            }
+            
+            div.innerHTML = content;
+            return div;
+        }
+
+        // Load default flow
+        loadFlow('business-license');
+    </script>
+</body>
+</html>
