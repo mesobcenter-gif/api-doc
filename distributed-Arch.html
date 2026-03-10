@@ -426,6 +426,49 @@
         min-width: 220px;
         max-width: 280px;
       }
+      .ministry-adapter-card {
+        min-width: 320px;
+        max-width: 420px;
+        padding: 24px;
+      }
+      .ministry-adapter-components {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--card-border);
+      }
+      .ministry-adapter-component {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      [data-theme='light'] .ministry-adapter-component {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .ministry-adapter-component .component-icon {
+        font-size: 1.1rem;
+      }
+      .ministry-adapter-component .component-name {
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+      .orch-flow-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--layer-orchestration);
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 0 8px;
+        flex-shrink: 0;
+      }
 
       .service-category {
         margin-bottom: 30px;
@@ -508,6 +551,30 @@
       }
       .identity-service-card:hover {
         box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+      }
+
+      /* Observability & Control detail page */
+      .observability-page-bar {
+        border-bottom-color: var(--layer-institutions) !important;
+      }
+      .observability-page-title {
+        color: var(--layer-institutions) !important;
+      }
+      .observability-back-btn {
+        background: var(--layer-institutions);
+        color: #fff;
+      }
+      .observability-back-btn:hover {
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+      }
+      .observability-page .category-title {
+        border-left-color: var(--layer-institutions);
+      }
+      .observability-service-card {
+        border-top: 3px solid var(--layer-institutions);
+      }
+      .observability-service-card:hover {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
       }
 
       /* Institution detail page: services table */
@@ -740,8 +807,18 @@
         stroke-dasharray: 5, 5;
         fill: none;
         animation: dash 1s linear infinite;
-        opacity: 0.6;
+        opacity: 0.5;
+        transition: opacity 0.25s, stroke-width 0.25s;
+        cursor: pointer;
       }
+
+      .connector-flow:hover,
+      .connector-flow.active {
+        opacity: 1;
+        stroke-width: 3;
+      }
+
+     
 
       /* Responsive Adjustments */
       @media (max-width: 1024px) {
@@ -828,7 +905,7 @@
       <div class="layer layer-orchestration" id="layer-orch">
         <div class="layer-label">
           <span>Layer 4</span>
-          <span>Orchestration</span>
+          <span>Core Business Services</span>
         </div>
         <div class="layer-content">
           <div class="card" id="orch-notif">
@@ -838,9 +915,15 @@
             <div class="card-subtitle">/v2/notifications</div>
             <div class="tooltip">SMS, Email, Push alerts</div>
           </div>
+          <div class="card" id="orch-doc">
+            <div class="card-icon">📁</div>
+            <div class="card-title">Document Management</div>
+            <div class="card-subtitle">/v2/storage</div>
+            <div class="tooltip">Scalable object storage for certificates, supporting docs, and digital assets</div>
+          </div>
           <div class="card clickable-orch" id="orch-core" style="transform: scale(1.05); border-width: 2px">
             <div class="card-icon">⚙️</div>
-            <div class="card-title">Orchestration</div>
+            <div class="card-title">Core Business</div>
             <div class="card-subtitle">Core Logic</div>
             <div class="tooltip">Workflow manager & coordination</div>
             <div class="clickable-indicator">Click to open</div>
@@ -850,6 +933,13 @@
             <div class="card-title">Identity Mgmt</div>
             <div class="card-subtitle">IAM Service</div>
             <div class="tooltip">Authentication &amp; Authorization — Click to open</div>
+            <div class="clickable-indicator">Click to open</div>
+          </div>
+          <div class="card clickable-orch" id="orch-observability" style="cursor: pointer;">
+            <div class="card-icon">📊</div>
+            <div class="card-title">Observability &amp; Control</div>
+            <div class="card-subtitle">Monitoring &amp; Audit</div>
+            <div class="tooltip">Audit, Monitoring, Health &amp; Control, ELK Stack — Click to open</div>
             <div class="clickable-indicator">Click to open</div>
           </div>
         </div>
@@ -864,28 +954,28 @@
         <div class="layer-content">
           <div class="card clickable-orch" id="ms-dars">
             <div class="card-icon">📄</div>
-            <div class="card-title">DARS Service</div>
+            <div class="card-title">DARS Service Adapter</div>
             <div class="card-subtitle">Document Authentication & Registration</div>
             <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
             <div class="clickable-indicator">Click to open</div>
           </div>
           <div class="card clickable-orch" id="ms-mor">
             <div class="card-icon">🔢</div>
-            <div class="card-title">MOR Service</div>
+            <div class="card-title">MOR Service Adapter</div>
             <div class="card-subtitle">Tax & Revenue</div>
             <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
             <div class="clickable-indicator">Click to open</div>
           </div>
           <div class="card clickable-orch" id="ms-nid">
             <div class="card-icon">🆔</div>
-            <div class="card-title">NID Service</div>
+            <div class="card-title">NID Service Adapter</div>
             <div class="card-subtitle">Identification</div>
             <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
             <div class="clickable-indicator">Click to open</div>
           </div>
           <div class="card clickable-orch" id="ms-motri">
             <div class="card-icon">💼</div>
-            <div class="card-title">MOTRI Service</div>
+            <div class="card-title">MOTRI Service Adapter</div>
             <div class="card-subtitle">Trade & Business Registration</div>
             <div class="tooltip">Same services via API Six Gateway (modified address &amp; auth) — Click to open</div>
             <div class="clickable-indicator">Click to open</div>
@@ -959,6 +1049,7 @@
           <span class="orch-page-title">Orchestration — layers &amp; message flow</span>
         </div>
         <div class="orch-page-content">
+          <svg class="orch-connections" id="orchConnectionsSvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
           <div class="architecture-container orch-view-container">
             <!-- 4.1: Citizen & Service Management -->
             <div class="layer layer-microservices">
@@ -967,57 +1058,56 @@
                 <span>Citizen &amp; Service Mgmt</span>
               </div>
               <div class="layer-content">
-                <div class="card">
-                  <div class="card-icon">📋</div>
-                  <div class="card-title">Application Service</div>
-                  <div class="card-subtitle">/v2/applications</div>
-                  <div class="tooltip">Full lifecycle management of citizen service applications — submit, track, approve, reject</div>
+                <div class="card orch-flow-card" data-service="svc-catalogue" data-connects-to="svc-registry">
+                  <div class="card-icon">📚</div>
+                  <div class="card-title">Service Catalogue</div>
+                  <div class="card-subtitle">/v2/services · /api/services</div>
+                  <div class="tooltip">Browse and discover government services by category, language, and provider; provides service metadata to the registry</div>
                 </div>
-                <div class="card">
+                <span class="orch-flow-arrow" aria-hidden="true">→</span>
+                <div class="card orch-flow-card" data-service="svc-registry" data-connects-to="svc-app">
                   <div class="card-icon">🏗️</div>
                   <div class="card-title">Service Registry &amp; Dynamic Forms</div>
                   <div class="card-subtitle">/v2/services · /v2/services/forms</div>
                   <div class="tooltip">190+ government services with multi-language support (am, en, or, ti), fees, and steps with dynamic forms</div>
                 </div>
-                <div class="card">
-                  <div class="card-icon">📁</div>
-                  <div class="card-title">Document Management</div>
-                  <div class="card-subtitle">/v2/storage</div>
-                  <div class="tooltip">Scalable object storage for certificates, supporting docs, and digital assets</div>
-                </div>
-                <div class="card">
-                  <div class="card-icon">✅</div>
-                  <div class="card-title">Validation Service</div>
-                  <div class="card-subtitle">/v2/validation</div>
-                  <div class="tooltip">Data validation, business rule enforcement, and schema verification</div>
-                </div>
               </div>
             </div>
 
-            <!-- 4.2: Workflow Engine (Saga · BPMN) -->
+            <!-- 4.2: Application Service (Workflow Engine, State Manager, Circuit Breaker, Retry) -->
             <div class="layer layer-orchestration">
               <div class="layer-label">
                 <span>4.2</span>
-                <span>Workflow Engine</span>
+                <span>Application Service</span>
               </div>
               <div class="layer-content">
-                <div class="card">
-                  <div class="card-icon">⚙️</div>
-                  <div class="card-title">Workflow Engine</div>
-                  <div class="card-subtitle">/v2/workflows</div>
-                  <div class="tooltip">Distributed transactions using the Saga pattern for long-running multi-agency workflows</div>
-                </div>
-                <div class="card">
-                  <div class="card-icon">📐</div>
-                  <div class="card-title">BPMN Versioning</div>
-                  <div class="card-subtitle">/api/v2/admin/workflows/bpmn</div>
-                  <div class="tooltip">Upload and manage BPMN workflow definitions with versioned deployments</div>
-                </div>
-                <div class="card">
-                  <div class="card-icon">🔀</div>
-                  <div class="card-title">Step Orchestrator</div>
-                  <div class="card-subtitle">/api/v2/admin/workflows/steps</div>
-                  <div class="tooltip">Step ordering, timeout thresholds, circuit breakers, and manual retry/resume</div>
+                <div class="card orch-standalone-card ministry-adapter-card" data-service="svc-app">
+                  <div class="card-icon card-icon-oneline">📋</div>
+                  <div class="card-title">Application Service</div>
+                  <div class="card-subtitle">/v2/applications · /v2/workflows</div>
+                  <div class="ministry-adapter-components">
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">⚙️</span>
+                      <span class="component-name">Workflow Engine</span>
+                    </div>
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">📊</span>
+                      <span class="component-name">State Manager</span>
+                    </div>
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">🔌</span>
+                      <span class="component-name">Circuit Breaker</span>
+                    </div>
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">🔄</span>
+                      <span class="component-name">Retry</span>
+                    </div>
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">🔁</span>
+                      <span class="component-name">Async Event Bus</span>
+                    </div>
+                  </div>
+                  <div class="tooltip">Full lifecycle management of citizen service applications. Contains: Workflow Engine (Saga pattern, BPMN), State Manager (workflow state), Circuit Breaker (fault tolerance), Retry (resilient retries), Async Event Bus (event-driven responses from ministry systems)</div>
                 </div>
               </div>
             </div>
@@ -1036,61 +1126,31 @@
                   <div class="card-subtitle">/v2/payments</div>
                   <div class="tooltip">TeleBirr, CBE Birr, bank transfers, USSD payments. PCI-DSS Level 1 compliant</div>
                 </div>
-                <div class="card">
-                  <div class="card-icon">🔁</div>
-                  <div class="card-title">Async Event Bus</div>
-                  <div class="card-subtitle">Event Bus</div>
-                  <div class="tooltip">Asynchronous callbacks and event-driven responses from ministry systems</div>
-                </div>
               </div>
             </div>
 
-            <!-- 4.4: Observability & Control -->
-            <div class="layer layer-institutions">
-              <div class="layer-label">
-                <span>4.4</span>
-                <span>Observability &amp; Control</span>
-              </div>
-              <div class="layer-content">
-                <div class="card">
-                  <div class="card-icon">📜</div>
-                  <div class="card-title">Audit Service</div>
-                  <div class="card-subtitle">/v2/logs · /api/v2/admin/audit</div>
-                  <div class="tooltip">Immutable, cryptographically-signed audit trails. Legal investigation mode. Compliance exports.</div>
-                </div>
-                <div class="card">
-                  <div class="card-icon">📊</div>
-                  <div class="card-title">Monitoring</div>
-                  <div class="card-subtitle">/v2/monitoring</div>
-                  <div class="tooltip">OpenTelemetry tracing, Prometheus metrics, Grafana dashboards, SLA alerts</div>
-                </div>
-                <div class="card">
-                  <div class="card-icon">🔒</div>
-                  <div class="card-title">Health &amp; Control</div>
-                  <div class="card-subtitle">/api/v2/admin/health</div>
-                  <div class="tooltip">Circuit breakers, traffic drain, service disabling, stalled workflow retry/resume</div>
-                </div>
-                <div class="card">
-                  <div class="card-icon">📦</div>
-                  <div class="card-title">ELK Stack</div>
-                  <div class="card-subtitle">Internal Infrastructure</div>
-                  <div class="tooltip">Centralized log management (Elasticsearch + Logstash + Kibana) for forensic analysis</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 4.4: Ministry Adapter (standalone) -->
+            <!-- 4.4: Ministry Adapter (big card containing Data Format Transform + Validation Service) -->
             <div class="layer layer-gateway">
               <div class="layer-label">
                 <span>4.4</span>
                 <span>Ministry Adapter</span>
               </div>
               <div class="layer-content">
-                <div class="card orch-standalone-card">
-                  <div class="card-icon card-icon-oneline">🏛️ 🔁 🏛️</div>
+                <div class="card orch-standalone-card ministry-adapter-card">
+                  <div class="card-icon card-icon-oneline">🏛️</div>
                   <div class="card-title">Ministry Adapter</div>
-                  <div class="card-subtitle">/v2/ministry</div>
-                  <div class="tooltip">Standardized integration with ministry-specific APIs and legacy government systems; translates request/response formats between platform and ministry APIs</div>
+                  <div class="card-subtitle">/v2/ministry · /v2/validation</div>
+                  <div class="ministry-adapter-components">
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">🔄</span>
+                      <span class="component-name">Data Format Transform</span>
+                    </div>
+                    <div class="ministry-adapter-component">
+                      <span class="component-icon">✅</span>
+                      <span class="component-name">Validation Service</span>
+                    </div>
+                  </div>
+                  <div class="tooltip">Standardized integration with ministry-specific APIs and legacy government systems. Contains: Data Format Transform (translates request/response formats between platform and ministry APIs) and Validation Service (data validation, business rules, schema verification)</div>
                 </div>
               </div>
             </div>
@@ -1218,6 +1278,59 @@
       </div>
     </div>
 
+    <!-- Observability & Control detail page -->
+    <div id="view-observability" class="diagram-view hidden">
+      <div class="orch-page observability-page">
+        <div class="orch-page-bar observability-page-bar">
+          <button type="button" class="back-btn observability-back-btn" id="backFromObservabilityBtn" aria-label="Back to overall diagram">
+            ← Back to overall
+          </button>
+          <span class="orch-page-title observability-page-title">Observability &amp; Control</span>
+        </div>
+        <div class="orch-page-content">
+          <div class="interaction-legend">
+            <div class="legend-title">📊 Observability &amp; Control services</div>
+            <div class="legend-item"><span class="legend-arrow">→</span> Services for monitoring, audit, health &amp; control</div>
+            <div class="legend-item"><span class="legend-arrow">↔</span> Message flow: communicates with Spring Cloud Gateway (metrics, logs, health, control signals)</div>
+          </div>
+
+          <div class="service-category">
+            <div class="category-title">Observability &amp; Control</div>
+            <div class="services-grid">
+              <div class="card observability-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">📜</div>
+                <div class="card-title">Audit Service</div>
+                <div class="card-subtitle">/v2/logs · /api/v2/admin/audit</div>
+                <div class="tooltip">Immutable, cryptographically-signed audit trails. Legal investigation mode. Compliance exports.</div>
+              </div>
+              <div class="card observability-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">📊</div>
+                <div class="card-title">Monitoring</div>
+                <div class="card-subtitle">/v2/monitoring</div>
+                <div class="tooltip">OpenTelemetry tracing, Prometheus metrics, Grafana dashboards, SLA alerts</div>
+              </div>
+              <div class="card observability-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">🔒</div>
+                <div class="card-title">Health &amp; Control</div>
+                <div class="card-subtitle">/api/v2/admin/health</div>
+                <div class="tooltip">Circuit breakers, traffic drain, service disabling, stalled workflow retry/resume</div>
+              </div>
+              <div class="card observability-service-card">
+                <span class="service-badge"></span>
+                <div class="card-icon">📦</div>
+                <div class="card-title">ELK Stack</div>
+                <div class="card-subtitle">Internal Infrastructure</div>
+                <div class="tooltip">Centralized log management (Elasticsearch + Logstash + Kibana) for forensic analysis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Theme Toggle Logic
       const themeBtn = document.getElementById('themeBtn');
@@ -1235,12 +1348,14 @@
       const viewOverall = document.getElementById('view-overall');
       const viewOrchestration = document.getElementById('view-orchestration');
       const viewIdentity = document.getElementById('view-identity');
+      const viewObservability = document.getElementById('view-observability');
       const viewInstitution = document.getElementById('view-institution');
       const viewMicroservice = document.getElementById('view-microservice');
       const orchCore = document.getElementById('orch-core');
       const orchId = document.getElementById('orch-id');
       const backToOverallBtn = document.getElementById('backToOverallBtn');
       const backFromIdentityBtn = document.getElementById('backFromIdentityBtn');
+      const backFromObservabilityBtn = document.getElementById('backFromObservabilityBtn');
       const backFromInstitutionBtn = document.getElementById('backFromInstitutionBtn');
       const backFromMicroserviceBtn = document.getElementById('backFromMicroserviceBtn');
       const instDetailTitle = document.getElementById('instDetailTitle');
@@ -1361,6 +1476,7 @@
         viewOverall.classList.add('hidden');
         viewOrchestration.classList.add('hidden');
         viewIdentity.classList.add('hidden');
+        viewObservability.classList.add('hidden');
         viewMicroservice.classList.add('hidden');
         viewInstitution.classList.remove('hidden');
         const data = INSTITUTION_SERVICES[instId];
@@ -1377,6 +1493,7 @@
         viewOverall.classList.add('hidden');
         viewOrchestration.classList.add('hidden');
         viewIdentity.classList.add('hidden');
+        viewObservability.classList.add('hidden');
         viewInstitution.classList.add('hidden');
         viewMicroservice.classList.remove('hidden');
         const data = MICROSERVICE_SERVICES[msId];
@@ -1398,6 +1515,7 @@
       function showOrchestrationPage() {
         viewOverall.classList.add('hidden');
         viewIdentity.classList.add('hidden');
+        viewObservability.classList.add('hidden');
         viewInstitution.classList.add('hidden');
         viewMicroservice.classList.add('hidden');
         viewOrchestration.classList.remove('hidden');
@@ -1409,12 +1527,23 @@
         viewOrchestration.classList.add('hidden');
         viewInstitution.classList.add('hidden');
         viewMicroservice.classList.add('hidden');
+        viewObservability.classList.add('hidden');
         viewIdentity.classList.remove('hidden');
+      }
+
+      function showObservabilityPage() {
+        viewOverall.classList.add('hidden');
+        viewOrchestration.classList.add('hidden');
+        viewInstitution.classList.add('hidden');
+        viewMicroservice.classList.add('hidden');
+        viewIdentity.classList.add('hidden');
+        viewObservability.classList.remove('hidden');
       }
 
       function showOverallPage() {
         viewOrchestration.classList.add('hidden');
         viewIdentity.classList.add('hidden');
+        viewObservability.classList.add('hidden');
         viewInstitution.classList.add('hidden');
         viewMicroservice.classList.add('hidden');
         viewOverall.classList.remove('hidden');
@@ -1429,6 +1558,13 @@
         orchId.addEventListener('click', (e) => {
           e.stopPropagation();
           showIdentityPage();
+        });
+      }
+      const orchObservability = document.getElementById('orch-observability');
+      if (orchObservability) {
+        orchObservability.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showObservabilityPage();
         });
       }
 
@@ -1459,6 +1595,9 @@
       }
       if (backFromIdentityBtn) {
         backFromIdentityBtn.addEventListener('click', showOverallPage);
+      }
+      if (backFromObservabilityBtn) {
+        backFromObservabilityBtn.addEventListener('click', showOverallPage);
       }
       if (backFromInstitutionBtn) {
         backFromInstitutionBtn.addEventListener('click', showOverallPage);
@@ -1526,47 +1665,101 @@
       setupServiceInteractions();
 
       // Connection Drawing Logic
-      function drawLine(svg, startElem, endElem, colorClass) {
-        const startRect = startElem.getBoundingClientRect();
-        const endRect = endElem.getBoundingClientRect();
-        const containerRect = document.querySelector('.architecture-container').getBoundingClientRect();
 
-        // Calculate relative coordinates
-        const x1 = startRect.left + startRect.width / 2 - containerRect.left;
-        const y1 = startRect.top - containerRect.top; // Top of start element
-        const x2 = endRect.left + endRect.width / 2 - containerRect.left;
-        const y2 = endRect.bottom - containerRect.top; // Bottom of end element (since we draw bottom-up visual but code is top-down logic usually, let's adjust)
+      // Generic layer-to-layer bezier (lower → upper), used for institution/microservice/orchestration layers
+      function drawLine(svg, fromElem, toElem, extraClass) {
+        const container = document.querySelector('.architecture-container').getBoundingClientRect();
+        const fr = fromElem.getBoundingClientRect();
+        const tr = toElem.getBoundingClientRect();
 
-        // Actually, we want lines from bottom layers UP to top layers.
-        // Start: Top of bottom element
-        // End: Bottom of top element
+        const x1 = fr.left + fr.width / 2 - container.left;
+        const y1 = fr.top - container.top;
+        const x2 = tr.left + tr.width / 2 - container.left;
+        const y2 = tr.bottom - container.top;
 
-        // Let's redefine: startElem is the LOWER element, endElem is the UPPER element
-        const startX = startRect.left + startRect.width / 2 - containerRect.left;
-        const startY = startRect.top - containerRect.top; // Top edge of lower card
+        const dy = Math.abs(y1 - y2);
+        const bend = Math.max(dy * 0.45, 40);
 
-        const endX = endRect.left + endRect.width / 2 - containerRect.left;
-        const endY = endRect.bottom - containerRect.top; // Bottom edge of upper card
-
-        // Create Path
+        const d = `M ${x1} ${y1} C ${x1} ${y1 - bend}, ${x2} ${y2 + bend}, ${x2} ${y2}`;
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-
-        // Bezier curve control points
-        const controlY1 = startY - 30;
-        const controlY2 = endY + 30;
-
-        const d = `M ${startX} ${startY} C ${startX} ${controlY1}, ${endX} ${controlY2}, ${endX} ${endY}`;
-
         path.setAttribute('d', d);
         path.classList.add('connector-flow');
-        // path.setAttribute("marker-end", "url(#arrowhead)"); // Optional arrow
-
+        if (extraClass) path.classList.add(extraClass);
         svg.appendChild(path);
+        return path;
+      }
+
+      // Arc fan from gateway (bottom-center) to Layer 4 cards (top-center)
+      // All arcs share the same origin point and fan uniformly
+      function drawFanArcs(svg, gatewayElem, targetElems, bidirSet) {
+        const container = document.querySelector('.architecture-container').getBoundingClientRect();
+        const gr = gatewayElem.getBoundingClientRect();
+
+        // Origin: bottom-center of gateway
+        const ox = gr.left + gr.width / 2 - container.left;
+        const oy = gr.bottom - container.top;
+
+        targetElems.forEach(({ elem, bidir }) => {
+          if (!elem) return;
+          const tr = elem.getBoundingClientRect();
+          // Destination: top-center of target card
+          const tx = tr.left + tr.width / 2 - container.left;
+          const ty = tr.top - container.top;
+
+          // Horizontal distance drives the bend: farther cards get a more pronounced arc
+          const dx = tx - ox;
+          const dy = ty - oy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const arcStrength = Math.max(Math.abs(dx) * 0.55, 30);
+
+          // Control points: pull horizontally toward the target, creating a smooth fan arc
+          const cx1 = ox;
+          const cy1 = oy + arcStrength * 0.5;
+          const cx2 = tx;
+          const cy2 = ty - arcStrength * 0.5;
+
+          const d = `M ${ox} ${oy} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tx} ${ty}`;
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', d);
+          path.classList.add('connector-flow');
+          if (bidir) path.classList.add('bidirectional');
+
+          // Hover: highlight the paired card
+          path.addEventListener('mouseenter', () => {
+            path.classList.add('active');
+            elem.style.boxShadow = '0 0 18px rgba(234,179,8,0.6)';
+          });
+          path.addEventListener('mouseleave', () => {
+            path.classList.remove('active');
+            elem.style.boxShadow = '';
+          });
+
+          svg.appendChild(path);
+
+          // Second path for bidirectional (offset slightly so both arcs are visible)
+          if (bidir) {
+            const offset = 6;
+            const d2 = `M ${tx} ${ty} C ${tx + offset} ${cy2}, ${ox + offset} ${cy1}, ${ox} ${oy}`;
+            const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path2.setAttribute('d', d2);
+            path2.classList.add('connector-flow', 'bidirectional');
+            path2.addEventListener('mouseenter', () => {
+              path2.classList.add('active');
+              elem.style.boxShadow = '0 0 18px rgba(0,182,212,0.6)';
+            });
+            path2.addEventListener('mouseleave', () => {
+              path2.classList.remove('active');
+              elem.style.boxShadow = '';
+            });
+            svg.appendChild(path2);
+          }
+        });
       }
 
       function drawConnections() {
         const svg = document.getElementById('svgLayer');
-        svg.innerHTML = ''; // Clear previous lines
+        svg.innerHTML = '';
 
         const springGw = document.getElementById('spring-cloud-gw');
         const apiSixGw = document.getElementById('api-gw');
@@ -1575,41 +1768,48 @@
         const orchCore = document.getElementById('orch-core');
         const uiMobile = document.getElementById('ui-mobile');
         const uiWeb = document.getElementById('ui-web');
+        const uiKiosk = document.getElementById('ui-kiosk');
+        const uiUssd = document.getElementById('ui-ussd');
 
-        // 1. Institutions -> API Six Gateway (organizations side)
-        instIds.forEach((id) => {
+        // 1. Institutions → API Six Gateway
+        instIds.forEach(id => {
           const inst = document.getElementById(id);
           if (inst && apiSixGw) drawLine(svg, inst, apiSixGw);
         });
 
-        // 2. API Six Gateway -> Microservices
-        msIds.forEach((id) => {
+        // 2. API Six Gateway → Microservices
+        msIds.forEach(id => {
           const ms = document.getElementById(id);
           if (apiSixGw && ms) drawLine(svg, apiSixGw, ms);
         });
 
-        // 3. Microservices -> Orchestration Core
-        msIds.forEach((id) => {
+        // 3. Microservices → Orchestration Core
+        msIds.forEach(id => {
           const ms = document.getElementById(id);
           if (ms && orchCore) drawLine(svg, ms, orchCore);
         });
 
-        // 4. Orchestration Core -> Spring Cloud Gateway (public side)
+        // 4. Orchestration Core → Spring Cloud Gateway
         if (orchCore && springGw) drawLine(svg, orchCore, springGw);
 
-        // 5. Spring Cloud Gateway -> Identity Mgmt & Notification
+        // 5. Spring Cloud Gateway ↔ Layer 4 services — uniform fan arcs
         const orchId = document.getElementById('orch-id');
         const orchNotif = document.getElementById('orch-notif');
-        if (springGw && orchId) drawLine(svg, springGw, orchId);
-        if (springGw && orchNotif) drawLine(svg, springGw, orchNotif);
+        const orchDoc = document.getElementById('orch-doc');
+        const orchObservability = document.getElementById('orch-observability');
 
-        // 6. Spring Cloud Gateway -> UI (Mobile, Web, Kiosk, USSD)
-        const uiKiosk = document.getElementById('ui-kiosk');
-        const uiUssd = document.getElementById('ui-ussd');
+        drawFanArcs(svg, springGw, [
+          { elem: orchNotif,       bidir: false },
+          { elem: orchDoc,         bidir: false },
+          { elem: orchId,          bidir: false },
+          { elem: orchObservability, bidir: true },
+        ]);
+
+        // 6. Spring Cloud Gateway → UI layer
         if (springGw && uiMobile) drawLine(svg, springGw, uiMobile);
-        if (springGw && uiWeb) drawLine(svg, springGw, uiWeb);
-        if (springGw && uiKiosk) drawLine(svg, springGw, uiKiosk);
-        if (springGw && uiUssd) drawLine(svg, springGw, uiUssd);
+        if (springGw && uiWeb)    drawLine(svg, springGw, uiWeb);
+        if (springGw && uiKiosk)  drawLine(svg, springGw, uiKiosk);
+        if (springGw && uiUssd)   drawLine(svg, springGw, uiUssd);
       }
 
       // Handle resize
